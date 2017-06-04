@@ -58,8 +58,8 @@ var config = {
         loaders: ["style-loader", "css-loader?minimize&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]", "less-loader?-compress"]
       },
       {
-        test: /\.(jpg|png|woff|eot|ttf|svg|gif)$/,
-        loader: "file-loader?name=[name]_[hash].[ext]"
+        test: /.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
+        loader: "file-loader?name=[name].[ext]"
       }
     ]
   },

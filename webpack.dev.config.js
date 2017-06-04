@@ -51,7 +51,7 @@ var devConfigExtension = {
         loaders: ["style-loader", "css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]", "less-loader"]
       },
       {
-        test: /\.(jpg|png|woff|eot|ttf|svg|gif)$/,
+        test: /.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
         loader: "file-loader?name=[name].[ext]"
       }
     ]
