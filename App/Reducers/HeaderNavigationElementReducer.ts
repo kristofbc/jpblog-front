@@ -18,7 +18,7 @@ export default handleActions<HeaderNavigationElementState, HeaderNavigationEleme
         });
         
         return {
-            elements:elements
+            elements: elements
         }
     }
 

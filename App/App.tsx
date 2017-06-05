@@ -7,6 +7,7 @@ import BaseComponent from "./Components/BaseComponent";
 import { StoreState } from "./Store/StoreState";
 
 import { loadNavigationElement } from "./ActionCreators/HeaderNavigationElementActionCreators";
+import { fetchPosts } from "./ActionCreators/GalleryPostFetchActionCreators";
 
 require('milligram');
 require('font-awesome/css/font-awesome');
@@ -14,6 +15,7 @@ require("./Global/Styles/global.less");
 
 interface IAppProps extends RouteComponentProps<void> {
     loadNavigationElement?: () => void;
+    loadGalleryPost?: () => void;
 }
 
 @connect(undefined, mapDispatchToProps)
@@ -28,12 +30,14 @@ class App extends BaseComponent<IAppProps, {}> {
 
     componentDidMount(): void {
         this.props.loadNavigationElement();
+        this.props.loadGalleryPost();
     }
 };
 
 function mapDispatchToProps(dispatch: Dispatch<{}>) {
     return {
-        loadNavigationElement: () => dispatch(loadNavigationElement())
+        loadNavigationElement: () => dispatch(loadNavigationElement()),
+        loadGalleryPost: () => dispatch(fetchPosts('latest', 0, 20))
     };
 }
 

@@ -5,7 +5,8 @@ import { Dispatch } from "redux";
 import { StoreState } from "./../../../Store/StoreState";
 import BaseComponent from "./../../BaseComponent";
 import { openSearch, closeSearch } from "./../../../ActionCreators/HeaderNavigationToggleSearchActionCreator";
-import { searchTyping } from "./../../../ActionCreators/HeaderNavigationSearchActionCreator";
+import { searchTyping, fetchResults } from "./../../../ActionCreators/HeaderNavigationSearchActionCreator";
+import { formatDate } from "./../../../Utils/Date";
 
 // tslint:disable-next-line:no-any
 const styles: any = require("./Header.module.less");
@@ -13,6 +14,7 @@ const styles: any = require("./Header.module.less");
 interface SearchInterface {
     isSearchEnabled?:boolean;
     query?:string;
+    results?:Post[];
 };
 
 interface HeaderPropInterface {
@@ -21,7 +23,155 @@ interface HeaderPropInterface {
 
     openSearch?: () => void,
     closeSearch?: () => void,
-    searchTyping?: (query:string) => void
+    searchTyping?: (query:string) => void,
+    fetchResults?: (query:string) => void
+};
+
+interface SearchBarPropInterface {
+    onClose: () => void;
+    onChange: (event) => void;
+    onSubmit: () => void;
+};
+
+interface NavigationPropInterface {
+    elements:HeaderNavigationElement[]
+};
+
+interface ToggleHeaderActionPropInterface {
+    onSearchClick: () => void;
+    onMobileMenuClick: () => void;
+};
+
+interface SearchResultsContainerPropInterface {
+    results:Post[];
+};
+
+const Logo = () => {
+    return (
+        <div className={styles.logoContainer}>
+            <a href="#">
+                <div className={styles.logoContainerInner}>
+                    <div className={styles.hideTop}></div>
+                    <div className={styles.hideLeft}></div>
+                    <div className={styles.hideBottom}></div>
+                    <div className={styles.hideRight}></div>
+                    <p className={styles.text}>Krstf<span>.io</span></p>
+                </div>
+            </a>
+        </div>
+    )
+};
+
+
+const SearchBar = (props:SearchBarPropInterface) => {
+    return (
+        <div className={styles.searchContainer}>
+            <div className={styles.searchContainerInner}>
+                <form action="/" method="POST" onSubmit={(e) => { e.preventDefault(); props.onSubmit(); }}>
+                    <ul>
+                        <li className={styles.cancel}>
+                            <button type="button" className="fa fa-times" onClick={() => props.onClose()}>&nbsp;</button>
+                        </li>
+                        <li className={styles.searchBar}>
+                            <input 
+                                type="text" 
+                                placeholder="Rechercher une destination, un tag, un mot..." 
+                                onChange={(event) => {props.onChange(event.target.value)}} 
+                            />
+                        </li>
+                    </ul>
+                </form>
+            </div>
+        </div>
+    )
+};
+
+const Navigation = (props:NavigationPropInterface) => {
+    const links = props.elements.map((ell, idx) => {
+        const key = `header-navigation-element-${idx}`;
+        const classNames = [];
+        if( ell.selected ) {
+            classNames.push(styles.selected);
+        }
+
+        return (
+            <li key={key} className={classNames.join(' ')}><a href={ell.url}>{ell.name}</a></li>
+        )
+    });
+
+    return (
+        <div className={styles.navigationContainer}>
+            <div className={styles.navigationContainerInner}>
+                <ul>{links}</ul>
+            </div>
+        </div>
+    );
+};
+
+const ToggleHeaderAction = (props:ToggleHeaderActionPropInterface) => {
+    return (
+        <div className={styles.actionContainer}>
+            <div className={styles.actionContainerInner}>
+                <ul>
+                    <li className={styles.search}><button type="button" className={"fa fa-search"} onClick={() => { props.onSearchClick(); }}></button></li>
+                    <li className={styles.hamburger}><button type="button" className={"fa fa-bars"} onClick={() => { props.onMobileMenuClick(); }}></button></li>
+                </ul>
+            </div>
+        </div>
+    )
+};
+
+const SearchResultsContainer = (props:SearchResultsContainerPropInterface) => {
+    const results = props.results.map((r, idx) => {
+        const key = `header-search-result-${idx}`;
+        let content = null;
+        // @TODO: Should be dynamic
+        if(r.body == '') {
+            content = (
+                <div className={styles.images}>
+                    <ul style={{width:1000}}>
+                        <li><img src="https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg" alt="Img 1" /></li>
+                        <li><img src="https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg" alt="Img 1" /></li>
+                        <li><img src="https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg" alt="Img 1" /></li>
+                    </ul>
+                </div>
+            );
+        } else {
+            content = (
+                <div className={styles.text}>
+                    <ul>
+                        <li><p>[...] C'est dans l'archipel d'<span className={styles.highlight}>Okinawa</span>, et dans cette île en particulier, que l'on trouve la plus longue espérance de vie (87 ans en moyenne pour les femmes et 79,4 [...] </p></li>
+                        <li><p>[...] L'île d'<span className={styles.highlight}>Okinawa</span> présente de nombreuses traces de son occupation par l'homme aux temps préhistoriques et historiques. [...]</p></li>
+                    </ul>
+                </div>
+            );
+        };
+        return (
+            <a key={key} href="#" className={styles.result}>
+                <div className="container">
+                    <div className="row">
+                        <div className={styles.resultInner}>
+                            <div className="column column-33">
+                                {/*<h2>L'Île d'<span className={styles.highlight}>Okinawa</span> <span className={styles.hashtag}>#voyage</span> <span className={[styles.hashtag, styles.highlight].join(' ')}>#okinawa</span></h2>*/}
+                                {/*<h3>Là où les gens vivent plus de 100 ans.</h3>*/}
+                                {/*<h4>31 décembre 2016 - <i className="fa fa-clock"></i> 15 min.</h4>*/}
+                                {r.title && <h2>{r.title}</h2>}
+                                {r.excerpt && <h3>{r.excerpt}</h3>}
+                                {r.date && <h4>{formatDate(r.date)}{r.readingTime && (<span> - <i className="fa fa-clock-o"></i> {r.readingTime} min.</span>)}</h4>}
+                            </div>
+                            <div className="column column-66">{content}</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        );
+    });
+
+    return (
+        <div className={styles.resultsContainer}>
+            <div className={styles.resultsContainerInner}>{results}</div>
+        </div>
+    )
 };
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -35,6 +185,7 @@ export default class Header extends BaseComponent<HeaderPropInterface, {}> {
             if( this.props.search.query && this.props.search.query != '' ) {
                 // Perform search
                 console.log('Perform search');
+                this.props.fetchResults(this.props.search.query);
             }
         } else {
             this.props.openSearch();
@@ -42,52 +193,18 @@ export default class Header extends BaseComponent<HeaderPropInterface, {}> {
     }
 
     doRender(): React.ReactElement<{}> {
-
         return (
             <div className={[styles.headerContainer, this.props.search.isSearchEnabled ? styles.searching : ''].join(' ')}>
                 <div className={[styles.headerInner].join(' ')}>
                     <div className="container">
                         <div className="row force-row">
                             <div className="column column-80">
-                                <div className={styles.logoContainer}>
-                                    <a href="#">
-                                        <div className={styles.logoContainerInner}>
-                                            <div className={styles.hideTop}></div>
-                                            <div className={styles.hideLeft}></div>
-                                            <div className={styles.hideBottom}></div>
-                                            <div className={styles.hideRight}></div>
-                                            <p className={styles.text}>Krstf<span>.io</span></p>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div className={styles.searchContainer}>
-                                    <div className={styles.searchContainerInner}>
-                                        <form action="/" method="POST">
-                                            <ul>
-                                                <li className={styles.cancel}><button type="button" className="fa fa-times" onClick={() => this.props.closeSearch()}>&nbsp;</button></li>
-                                                <li className={styles.searchBar}><input type="text" placeholder="Rechercher une destination, un tag, un mot..." onChange={(event) => {this.props.searchTyping(event.target.value)}} /></li>
-                                            </ul>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div className={styles.navigationContainer}>
-                                    <div className={styles.navigationContainerInner}>
-                                        <ul>
-                                            <li className={styles.selected}><a href="#">Latest</a></li>
-                                            <li><a href="#">Trending</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
+                                <Logo />
+                                <SearchBar onClose={this.props.closeSearch} onChange={this.props.searchTyping} onSubmit={() => { this.searchClicked();}} />
+                                <Navigation elements={this.props.navigationElements} />
                             </div>
                             <div className="column column-20">
-                                <div className={styles.actionContainer}>
-                                    <div className={styles.actionContainerInner}>
-                                        <ul>
-                                            <li className={styles.search}><button type="button" className={"fa fa-search"} onClick={() => { this.searchClicked() }}></button></li>
-                                            <li className={styles.hamburger}><button type="button" className={"fa fa-bars"}></button></li>
-                                        </ul>
-                                    </div>
-                                </div>
+                                <ToggleHeaderAction onSearchClick={() => { this.searchClicked(); }} onMobileMenuClick={() => {}} />
                             </div>
                         </div>
                     </div>
@@ -101,57 +218,7 @@ export default class Header extends BaseComponent<HeaderPropInterface, {}> {
                                 </div>
                             </div>
                         </div>
-                        <div className={styles.resultsContainer}>
-                            <div className={styles.resultsContainerInner}>
-
-                                <a href="#" className={styles.result}>
-                                    <div className="container">
-                                        <div className="row">
-                                            <div className={styles.resultInner}>
-                                                <div className="column column-33">
-                                                    <h2>L'Île d'<span className={styles.highlight}>Okinawa</span> <span className={styles.hashtag}>#voyage</span> <span className={[styles.hashtag, styles.highlight].join(' ')}>#okinawa</span></h2>
-                                                    <h3>Là où les gens vivent plus de 100 ans.</h3>
-                                                    <h4>31 décembre 2016 - <i className="fa fa-clock"></i> 15 min.</h4>
-                                                </div>
-                                                <div className="column column-66">
-                                                    <div className={styles.images}>
-                                                        <ul style={{width:1000}}>
-                                                            <li><img src="https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg" alt="Img 1" /></li>
-                                                            <li><img src="https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg" alt="Img 1" /></li>
-                                                            <li><img src="https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg" alt="Img 1" /></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <a href="#" className={styles.result}>
-                                    <div className="container">
-                                        <div className="row">
-                                            <div className={styles.resultInner}>
-                                                <div className="column column-33">
-                                                    <h2>L'Île d'<span className={styles.highlight}>Okinawa</span> <span className={styles.hashtag}>#voyage</span> <span className={[styles.hashtag, styles.highlight].join(' ')}>#okinawa</span></h2>
-                                                    <h3>Là où les gens vivent plus de 100 ans.</h3>
-                                                    <h4>31 décembre 2016 - <i className="fa fa-clock"></i> 15 min.</h4>
-                                                </div>
-                                                <div className="column column-66">
-                                                    <div className={styles.text}>
-                                                        <ul>
-                                                            <li><p>[...] C'est dans l'archipel d'<span className={styles.highlight}>Okinawa</span>, et dans cette île en particulier, que l'on trouve la plus longue espérance de vie (87 ans en moyenne pour les femmes et 79,4 [...] </p></li>
-                                                            <li><p>[...] L'île d'<span className={styles.highlight}>Okinawa</span> présente de nombreuses traces de son occupation par l'homme aux temps préhistoriques et historiques. [...]</p></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-
-
-                            </div>
-                        </div>
+                        <SearchResultsContainer results={this.props.search.results} />
                     </div>
                 </div>
             </div>
@@ -160,12 +227,12 @@ export default class Header extends BaseComponent<HeaderPropInterface, {}> {
 };
 
 function mapStateToProps(state: StoreState): HeaderPropInterface {
-    console.log(state);
     return {
-        navigationElements: state.navigationElements,
+        navigationElements: state.navigationElements.elements,
         search: {
             isSearchEnabled: state.headerSearch.isOpen,
-            query: state.headerSearch.query
+            query: state.headerSearch.query,
+            results: state.headerSearch.results
         }
     }
 }
@@ -174,6 +241,7 @@ function mapDispatchToProps(dispatch: Dispatch<{}>): HeaderPropInterface {
     return {
         openSearch: () => dispatch(openSearch()),
         closeSearch: () => dispatch(closeSearch()),
-        searchTyping: (query:string) => dispatch(searchTyping(query))
+        searchTyping: (query:string) => dispatch(searchTyping(query)),
+        fetchResults: (query:string) => dispatch(fetchResults(query))
     }
 }
