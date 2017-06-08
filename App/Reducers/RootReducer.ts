@@ -7,7 +7,7 @@ import GalleryPostReducer from "./GalleryPostReducer";
 const rootReducer: Reducer<StoreState> = combineReducers<StoreState>({
     navigationElements: headerNavigationElementReducer,
     headerSearch: HeaderSearchReducer,
-    galleryPost: GalleryPostReducer
+    galleryPosts: GalleryPostReducer
 });
 
 export default rootReducer;
