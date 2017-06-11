@@ -39,6 +39,7 @@ export function mapJsonToPostModels(json:any):Post[] {
  * @return {number[]} An array of new aspect ratios to apply
  */
 export function linearPartition(seq, k) {
+    // debugger;
     if( k <= 0 ) { return []; }
 
     let n = seq.length-1;
@@ -83,7 +84,7 @@ export function linearPartition(seq, k) {
 
     k = k - 2;
     let ans = [];
-    while(k >= 0) {
+    while(k >= 0 && n > 0) {
         ans = [seq.slice(solution[n-1][k] + 1, n + 1)].concat(ans);
         n = solution[n-1][k];
         k = k - 1;
