@@ -11,6 +11,7 @@ import { formatDate } from "./../../Utils/Date";
 import { createThumbnailsGrid, PostThumbnailsGridInterface } from "./../../Utils/Post";
 
 import { dragStart, dragMove, dragStop } from "./../../ActionCreators/HomePagePostMobileDragActionCreator";
+import { visualizerOpen } from "./../../ActionCreators/VisualizerActionCreators"
 
 // tslint:disable-next-line:no-any
 const styles: any = require("./HomePage.module.less");
@@ -33,9 +34,12 @@ interface HomePagePropInterface {
     postMobileOnDragStart?: (posX:number, posY:number) => void;
     postMobileOnDragMove?: (posX:number, posY:number) => void;
     postMobileOnDragStop?: (page:number) => void;
+
+    openVisualizer?: (posts:Post[], index: number) => void;
 };
 
 interface PostPropInterface {
+    id: number;
     tags?: string[];
     title?: string;
     excerpt?: string;
@@ -48,18 +52,19 @@ interface PostPropInterface {
     color: string;
     width: number;
     height: number;
-    onClick: () => void;
+    onClick: (id:number) => void;
 };
 
 interface PostGridPropInterface {
     posts: Post[];
     windowWidth: number;
     windowHeight: number;
+    onPostSelected: (id:number) => void;
 };
 
 const PostC = (props:PostPropInterface) => {
     const tags = props.tags.map((t, idx) => {
-        return (<li key={`post-tag-${idx}`}>{t}</li>);
+        return (<li key={`post-tag-${idx}`}>#{t}</li>);
     });
     const date = [];
     if(props.date) {
@@ -74,7 +79,7 @@ const PostC = (props:PostPropInterface) => {
                 height: props.height ? props.height : 'auto'
             }}
         >
-            <a href={props.url} onClick={(e) => { e.preventDefault(); props.onClick(); }}>
+            <a href={props.url} onClick={(e) => { e.preventDefault(); props.onClick(props.id); }}>
                 <div className={styles.postInner}>
                     <div 
                         className={styles.background} 
@@ -131,7 +136,7 @@ const PostGrid = (props:PostGridPropInterface) => {
             buffers[i].map((size, idx) => {
                 const key = `home-page-post-grid-post-${idx}`;
                 const post = props.posts[size.idx];
-                return createPostComponentFromPostModel(post, {key: key, width: size.resize_width, height: size.resize_height});
+                return createPostComponentFromPostModel(post, {key: key, width: size.resize_width, height: size.resize_height, onClick: props.onPostSelected});
             })
         );
     }
@@ -156,6 +161,7 @@ const PostGrid = (props:PostGridPropInterface) => {
 function createPostComponentFromPostModel(p:Post, props:any = {}):React.ReactElement<{PostC}> {
     return (
         <PostC
+            id={p.id}
             background={p.media.url}
             color={p.media.background_color}
             date={p.date && formatDate(p.date)}
@@ -168,7 +174,7 @@ function createPostComponentFromPostModel(p:Post, props:any = {}):React.ReactEle
             backgroundHeight={p.media.height}
             width={props.width ? props.width : 0}
             height={props.height ? props.height : 0}
-            onClick={() => {console.log("clckeeedddd")}}
+            onClick={props.onClick}
             {...props}
         />
     );
@@ -176,6 +182,7 @@ function createPostComponentFromPostModel(p:Post, props:any = {}):React.ReactEle
 
 @connect(mapStateToProps, mapDispatchToProps)
 class HomePage extends BaseComponent<HomePagePropInterface, {}> {
+
     onPostMobileOnDragStart(posX: number, posY: number):void {
         if( this.props.isMobile && !this.props.postMobileCoverDragging ) {
             const container = ReactDOM.findDOMNode(this.refs['postContainerInner']).getBoundingClientRect();
@@ -221,7 +228,10 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
                     >
                         <div className={styles.postMobileCoverContainer}>
                             <div className={styles.postMobileCoverContainerInner}>
-                                {this.props.posts.length > 0 && createPostComponentFromPostModel(this.props.posts[0])}
+                                {this.props.posts.length > 0 && createPostComponentFromPostModel(this.props.posts[0], {onClick: (id:number) => {
+                                    // Open it?
+                                    console.log("open cover");
+                                }})}
                                 <div className={styles.postMobileCoverNavigation}>
                                     <ul>
                                         <li><i className="fa fa-circle" /></li>
@@ -234,6 +244,14 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
                             posts={this.props.isMobile && this.props.posts.length > 0 ? this.props.posts.slice(1) : this.props.posts} 
                             windowWidth={this.props.width}
                             windowHeight={this.props.height}
+                            onPostSelected={(id:number) => {
+                                for(var i = 0; i < this.props.posts.length; i++) {
+                                    if(this.props.posts[i].id == id) {
+                                        this.props.openVisualizer(this.props.posts, i)
+                                        break;
+                                    }
+                                }
+                            }}
                         />
                     </div>
                 </div>
@@ -265,7 +283,8 @@ function mapDispatchToProps(dispatch: Dispatch<{}>): HomePagePropInterface {
     return {
         postMobileOnDragStart: (posX:number, posY:number) => dispatch(dragStart(posX, posY)),
         postMobileOnDragMove: (posX:number, posY:number) => dispatch(dragMove(posX, posY)),
-        postMobileOnDragStop: (page:number) => dispatch(dragStop(page))
+        postMobileOnDragStop: (page:number) => dispatch(dragStop(page)),
+        openVisualizer: (posts: Post[], index: number) => dispatch(visualizerOpen(posts, index))
     }
 };
 

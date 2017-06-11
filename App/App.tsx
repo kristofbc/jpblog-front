@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { RouteComponentProps, match } from 'react-router';
 import HomePage from "./Components/HomePage/HomePage";
+import Visualizer from "./Components/Common/Visualizer/Visualizer";
 import BaseComponent from "./Components/BaseComponent";
 import { StoreState } from "./Store/StoreState";
 
@@ -30,6 +31,7 @@ class App extends BaseComponent<IAppProps, {}> {
         return (
             <div>
                 <HomePage />
+                <Visualizer />
             </div>
         );
     }

@@ -1,0 +1,167 @@
+@import (reference) "../../../Global/Styles/variables.less";
+
+.visualizerContainer {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    padding-top: 45px;
+    z-index: 200;
+    background-color: rgba(255, 255, 255, 0.7);
+    transition: all 0.2s ease;
+
+    &.visualizerOpened {
+        display: block;
+        opacity: 1;
+    }
+    &.visualizerClosed {
+        display: none;
+        opacity: 0;
+    }
+
+    // No visualizer on mobile
+	@media (max-width: 40.0rem) {
+        display: none!important;
+    }
+}
+
+.visualizerTopContainner {
+    .visualizerTopContainerInner {}
+
+    .visualizerTopHeader {
+        position: relative;
+    }
+
+    .currentPostInformationContainer {
+        display: inline-block;
+        
+        .currentPostInformationContainerInner {
+            background: white;
+            padding: 10px;
+            border-radius: 2px 2px 0 0;
+
+            h2 {
+                font-family: 'Georgia', 'serif';
+                font-size: 1.4rem;
+                color: #282828;
+                margin-bottom: 1px;
+
+                .hashtag {
+                    font-family: 'Scope One';
+                    font-size: 1.0rem;
+                    color: #282828;
+                    text-transform: uppercase;
+                    margin-left: 3px;
+                }
+            }
+            h3 {
+                font-family: 'Libre Franklin';
+                font-size: 1.2rem;
+                color: #282828;
+                margin-bottom: 3px;
+            }
+            h4 {
+                font-family: 'Scope One';
+                color: #282828;
+                font-size: 1.0rem;
+                margin-bottom: 1px;
+            }
+        }
+    }
+
+    .visualizerControlsContainer {
+        display: inline-block;
+        position: absolute;
+        right: 0;
+        bottom: 10px;
+
+        .visualizerControlsContainerInner {
+            ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+
+                li {
+                    display: inline-block;
+                    margin: 0 0 0 10px;
+                    padding: 0;
+
+                    button {
+                        background: white;
+                        font-family: 'Myriad Pro';
+                        font-size: 1.0rem;
+                        color: #282828;
+                        padding: 0 2rem;
+                        margin: 0;
+                        border: 0;
+                        border-radius: 2px;
+
+                        &:hover {
+                            background: #f9f9f9;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .currentPostContainer {
+        display: block;
+        width: 100%;
+        height: auto;
+        background: white;
+        text-align: center;
+
+        .currentPostContainerInner {
+            padding: 3px;
+            display: inline-block;
+            width: 100%;
+
+            img {
+                &.portait {
+                    height: 100%;
+                    width: auto;
+                }
+                &.landscape {
+                    width: 100%;
+                    height: auto;
+                }
+            }            
+        }
+    }
+}
+
+.visualizerBottomContainer {
+    margin-top: 25px;
+    padding: 3px;
+
+    .visualizerBottomContainerInner {}
+    .visualizerAvailablePostsContainer {}
+
+    .availablePost {
+        display: inline-block;
+        overflow: hidden;
+
+        &:hover, &.availablePostSelected {
+            -moz-box-shadow:    inset 0px 0px 0px 10px  white;
+            -webkit-box-shadow: inset 0px 0px 0px 10px  white;
+            box-shadow:         inset 0px 0px 0px 10px  white;
+        }
+
+        a {
+            display: block;
+            width: 100%;
+            height: 100%;
+
+            img {
+                &.portait {
+                    height: 100%;
+                    width: auto;
+                }
+                &.landscape {
+                    width: 100%;
+                    height: auto;
+                }
+            }
+        }
+    }
+}

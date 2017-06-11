@@ -1,5 +1,5 @@
 declare interface Post {
-    readonly id: string;
+    readonly id: number;
     readonly title?: string;
     readonly excerpt?: string;
     readonly body?: string;

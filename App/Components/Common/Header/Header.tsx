@@ -146,6 +146,13 @@ const SearchResultsContainer = (props:SearchResultsContainerPropInterface) => {
                 </div>
             );
         };
+
+        const tags = r.tags.map((t, idx) => {
+            const key = `search-result-post-tag-${idx}`;
+            return (
+                <span className={styles.hashtag}>#{t.title}</span>
+            );
+        });
         return (
             <a key={key} href="#" className={styles.result}>
                 <div className="container">
@@ -155,7 +162,7 @@ const SearchResultsContainer = (props:SearchResultsContainerPropInterface) => {
                                 {/*<h2>L'Île d'<span className={styles.highlight}>Okinawa</span> <span className={styles.hashtag}>#voyage</span> <span className={[styles.hashtag, styles.highlight].join(' ')}>#okinawa</span></h2>*/}
                                 {/*<h3>Là où les gens vivent plus de 100 ans.</h3>*/}
                                 {/*<h4>31 décembre 2016 - <i className="fa fa-clock"></i> 15 min.</h4>*/}
-                                {r.title && <h2>{r.title}</h2>}
+                                {r.title && <h2>{r.title} {tags}</h2>}
                                 {r.excerpt && <h3>{r.excerpt}</h3>}
                                 {r.date && <h4>{formatDate(r.date)}{r.readingTime && (<span> - <i className="fa fa-clock-o"></i> {r.readingTime} min.</span>)}</h4>}
                             </div>
