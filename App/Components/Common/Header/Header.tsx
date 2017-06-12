@@ -4,6 +4,7 @@ import { Dispatch } from "redux";
 
 import { StoreState } from "./../../../Store/StoreState";
 import BaseComponent from "./../../BaseComponent";
+import MediaDisplay from "./../MediaDisplay/MediaDisplay";
 import { openSearch, closeSearch } from "./../../../ActionCreators/HeaderNavigationToggleSearchActionCreator";
 import { searchTyping, fetchResults } from "./../../../ActionCreators/HeaderNavigationSearchActionCreator";
 import { formatDate } from "./../../../Utils/Date";
@@ -126,13 +127,14 @@ const SearchResultsContainer = (props:SearchResultsContainerPropInterface) => {
         const key = `header-search-result-${idx}`;
         let content = null;
         // @TODO: Should be dynamic
+        const aspectRatio = 90/222;
         if(r.body == '') {
             content = (
                 <div className={styles.images}>
                     <ul style={{width:1000}}>
-                        <li><img src="https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg" alt="Img 1" /></li>
-                        <li><img src="https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg" alt="Img 1" /></li>
-                        <li><img src="https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg" alt="Img 1" /></li>
+                        <li><MediaDisplay style={{ width: 640*aspectRatio, height: 222*aspectRatio }} background={'https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg'} color={'red'} random={true} /></li>
+                        <li><MediaDisplay style={{ width: 640*aspectRatio, height: 222*aspectRatio }} background={'https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg'} color={'red'} random={true} /></li>
+                        <li><MediaDisplay style={{ width: 640*aspectRatio, height: 222*aspectRatio }} background={'https://c1.staticflickr.com/5/4216/34679008770_a8af0816cc_z.jpg'} color={'red'} random={true} /></li>
                     </ul>
                 </div>
             );

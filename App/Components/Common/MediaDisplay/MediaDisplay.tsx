@@ -15,6 +15,7 @@ interface MediaDisplayPropInterface {
     width?: number;
     height?: number;
     random?: boolean;
+    style?: any;
 
     onMediaLoaded?: () => void;
     loaded?: {[url: string]: boolean };
@@ -26,16 +27,11 @@ interface MediaDisplayPropInterface {
 class MediaDisplay extends BaseComponent<MediaDisplayPropInterface, {}> {
 
     doRender(): React.ReactElement<{}> {
+        console.log('update');
         const loaded = this.props.loaded[this.props.background] != undefined && this.props.loaded[this.props.background] == true;
 
+        const styleContainer: any = this.props.style ? this.props.style : {};
         const styleBackground: any = {};
-        const styleContainer:any = {};
-        if( this.props.width ) {
-            styleContainer.width = this.props.width;
-        }
-        if( this.props.height ) {
-            styleContainer.height = this.props.height;
-        }
         if( loaded ) {
             styleBackground.backgroundImage = `url(${this.props.background})`;
         }
@@ -72,7 +68,9 @@ class MediaDisplay extends BaseComponent<MediaDisplayPropInterface, {}> {
     };
 
     shouldComponentUpdate(nextProps:MediaDisplayPropInterface, nextState:MediaDisplayPropInterface) {
-        return nextProps.loaded[this.props.background] != undefined && nextProps.loaded[this.props.background] == true;
+        return this.props.background != nextProps.background ||
+               (this.props.loaded[this.props.background] == undefined || !this.props.loaded[this.props.background]) && 
+               (nextProps.loaded[this.props.background] != undefined && nextProps.loaded[this.props.background])
     };
 
 };

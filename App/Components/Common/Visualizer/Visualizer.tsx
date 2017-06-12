@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 
 import BaseComponent from "./../../BaseComponent";
+import MediaDisplay from "./../MediaDisplay/MediaDisplay";
 import { StoreState } from "./../../../Store/StoreState";
 import { formatDate } from "./../../../Utils/Date"
 import { visualizerNext, visualizerPrevious, visualizerSetIndex, visualizerClose, visualizerSetWidth, visualizerSetOffset } from "./../../../ActionCreators/VisualizerActionCreators";
@@ -42,6 +43,7 @@ interface VisualizerControlsPropInterface {
 
 interface CurrentPostInterface {
     post: Post;
+    containerWidth: number;
     containerHeight: number;
     containerOffsetTop: number;
 };
@@ -90,20 +92,40 @@ const VisualizerControls = ( props: VisualizerControlsPropInterface ) => {
 const CurrentPost = (props: CurrentPostInterface) => {
     let maxHeight:any = 'auto';
     if( props.containerHeight && props.containerOffsetTop ) {
-        maxHeight = props.containerHeight - props.containerOffsetTop - 20;
+        // Big screen: 1200 no more than that, otherwise it's crazy huge
+        maxHeight = Math.min(props.containerHeight - props.containerOffsetTop - 20, 1200)
     }
-    
+
+    let width = props.post.media.width;
+    let height = props.post.media.height;
+
     return (
         <div className={styles.currentPostContainer}>
             <div className={styles.currentPostContainerInner}>
-                <img 
+                <div
+                    className={styles.mediaDisplayContainer}
+                    style={{
+                        height: maxHeight
+                    }}
+                >
+                    <MediaDisplay 
+                        background={props.post.media.url}
+                        color={props.post.media.background_color}
+                        random={false}
+                        style={{
+                            width, height
+                        }}
+                    />
+                </div>
+
+                {/*<img 
                     src={props.post.media.url} 
                     alt={props.post.title ? props.post.title : ''} 
                     className={props.post.media.width >= props.post.media.height ? styles.landscape : styles.portrait}
                     style={{
                         maxHeight: maxHeight
                     }}
-                />
+                />*/}
             </div>
         </div>
     );
@@ -132,11 +154,16 @@ const VisualizerAvailablePosts = ( props:VisualizerAvailablePostsInterface ) => 
                             href="#" 
                             onClick={(e) => { e.preventDefault(); props.onClick(size.idx); }}
                         >
-                            <img 
+                            <MediaDisplay 
+                                background={post.media.url}
+                                color={post.media.background_color}
+                                random={true}
+                            />
+                            {/*<img 
                                 src={post.media.url} 
                                 alt={post.title ? post.title : ''} 
                                 className={post.media.width >= post.media.height ? styles.landscape : styles.portrait}
-                            />
+                            />*/}
                         </a>
                     </div>
                 )
@@ -180,7 +207,7 @@ class Visualizer extends BaseComponent<VisualizerPropInterface, {}> {
                                     <div className="clearfix"></div>
                                 </div>
                                 <div className={styles.visualizerTopBody} ref={"visualizerTopBody"}>
-                                    {this.props.posts.length > 0 && (<CurrentPost post={current} containerHeight={this.props.innerHeight} containerOffsetTop={this.props.visualizerOffsetTop} />)}
+                                    {this.props.posts.length > 0 && (<CurrentPost post={current} containerHeight={this.props.innerHeight} containerOffsetTop={this.props.visualizerOffsetTop} containerWidth={this.props.containerWidth} />)}
                                 </div>
                             </div>
                         </div>
@@ -206,9 +233,13 @@ class Visualizer extends BaseComponent<VisualizerPropInterface, {}> {
     }
 
     onWindowResize() {
-        const container = ReactDOM.findDOMNode(this.refs['visualizerTopBody']).getBoundingClientRect();
-        this.props.setWidthVisualizer(container.width);
-        this.props.setOffsetVisualizer(container.top);
+        const node = ReactDOM.findDOMNode(this.refs['visualizerTopBody']);
+        if( node ) {
+            const container = node.getBoundingClientRect();
+            this.props.setWidthVisualizer(container.width);
+            this.props.setOffsetVisualizer(container.top);
+        }
+        
     };
 
     onKeyboardEvent(event:KeyboardEvent) {
