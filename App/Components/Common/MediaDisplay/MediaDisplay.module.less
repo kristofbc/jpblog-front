@@ -1,0 +1,64 @@
+@import (reference) "../../../Global/Styles/variables.less";
+
+@keyframes fadeIn { 
+  from { opacity: 0.5; } 
+}
+
+.mediaDisplayContainer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    &.loading {
+        .color {
+            animation: fadeIn 1s infinite alternate;
+        }
+    }
+    &.loaded {
+        .media {
+            opacity: 1;
+        }
+    }
+}
+.mediaDisplayContainerInner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.color {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    transition: all 0.2s ease;
+}
+.media {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-repeat: no-repeat;
+    background-position: center center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    transition: all 0.2s ease;
+}

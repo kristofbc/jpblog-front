@@ -6,6 +6,7 @@ import GalleryPostReducer from "./GalleryPostReducer";
 import HomePagePostMobileDragReducer from "./HomePagePostMobileDragReducer";
 import ApplicationConfigurationReducer from "./ApplicationConfigurationReducer";
 import VisualizerReducer from "./VisualizerReducer";
+import MediaDisplayReducer from "./MediaDisplayReducer";
 
 const rootReducer: Reducer<StoreState> = combineReducers<StoreState>({
     navigationElements: headerNavigationElementReducer,
@@ -13,7 +14,8 @@ const rootReducer: Reducer<StoreState> = combineReducers<StoreState>({
     galleryPosts: GalleryPostReducer,
     homePagePostMobile: HomePagePostMobileDragReducer,
     applicationConfiguration: ApplicationConfigurationReducer,
-    visualizer: VisualizerReducer
+    visualizer: VisualizerReducer,
+    mediaDisplay: MediaDisplayReducer
 });
 
 export default rootReducer;

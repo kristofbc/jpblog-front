@@ -7,6 +7,7 @@ import { StoreState } from "./../../Store/StoreState";
 
 import BaseComponent from "./../BaseComponent";
 import Header from "./../Common/Header/Header";
+import MediaDisplay from "./../Common/MediaDisplay/MediaDisplay";
 import { formatDate } from "./../../Utils/Date";
 import { createThumbnailsGrid, PostThumbnailsGridInterface } from "./../../Utils/Post";
 
@@ -81,15 +82,7 @@ const PostC = (props:PostPropInterface) => {
         >
             <a href={props.url} onClick={(e) => { e.preventDefault(); props.onClick(props.id); }}>
                 <div className={styles.postInner}>
-                    <div 
-                        className={styles.background} 
-                        style={{ 
-                            backgroundColor: props.color,
-                            backgroundImage: `url(${props.background})`
-                        }}
-                    >
-                        {/*<img src={props.background} alt={props.title||''} className={props.backgroundWidth >= props.backgroundHeight ? styles.landscape : styles.portrait} />*/}
-                    </div>
+                    <MediaDisplay color={props.color} background={props.background} random={true} />
                     <div className={styles.cover}></div>
                     <div className={styles.progressBar}></div>
                     <div className={styles.content}>
