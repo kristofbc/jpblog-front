@@ -4,7 +4,7 @@ export function loadNavigationElement(): ReduxActions.Action<HeaderNavigationEle
     let payload:HeaderNavigationElementLoadActionPayload[] = [{
         name: "Latest",
         selected: true,
-        url: "/#latest"
+        url: "/latest"
     }];
 
     return headerNavigationElementLoadAction(payload);

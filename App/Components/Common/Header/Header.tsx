@@ -1,6 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
+import { Link } from "react-router-dom";
 
 import { StoreState } from "./../../../Store/StoreState";
 import BaseComponent from "./../../BaseComponent";
@@ -8,6 +9,7 @@ import MediaDisplay from "./../MediaDisplay/MediaDisplay";
 import { openSearch, closeSearch } from "./../../../ActionCreators/HeaderNavigationToggleSearchActionCreator";
 import { searchTyping, fetchResults } from "./../../../ActionCreators/HeaderNavigationSearchActionCreator";
 import { formatDate } from "./../../../Utils/Date";
+import { home, gallerie } from "./../../../Utils/Route";
 
 // tslint:disable-next-line:no-any
 const styles: any = require("./Header.module.less");
@@ -49,16 +51,16 @@ interface SearchResultsContainerPropInterface {
 
 const Logo = () => {
     return (
-        <div className={styles.logoContainer}>
-            <a href="#">
+        <div className={[styles.logoContainer, styles.loading].join(' ')}>
+            <Link to={home()}>
                 <div className={styles.logoContainerInner}>
-                    <div className={styles.hideTop}></div>
-                    <div className={styles.hideLeft}></div>
-                    <div className={styles.hideBottom}></div>
-                    <div className={styles.hideRight}></div>
+                    <div className={styles.hideTopLeft}></div>
+                    <div className={styles.hideTopBottom}></div>
+                    <div className={styles.hideBottomTop}></div>
+                    <div className={styles.hideBottomLeft}></div>
                     <p className={styles.text}>Krstf<span>.io</span></p>
                 </div>
-            </a>
+            </Link>
         </div>
     )
 };
@@ -96,7 +98,9 @@ const Navigation = (props:NavigationPropInterface) => {
         }
 
         return (
-            <li key={key} className={classNames.join(' ')}><a href={ell.url}>{ell.name}</a></li>
+            <li key={key} className={classNames.join(' ')}>
+                <Link to={ell.url}>{ell.name}</Link>
+            </li>
         )
     });
 
@@ -152,11 +156,11 @@ const SearchResultsContainer = (props:SearchResultsContainerPropInterface) => {
         const tags = r.tags.map((t, idx) => {
             const key = `search-result-post-tag-${idx}`;
             return (
-                <span className={styles.hashtag}>#{t.title}</span>
+                <span key={key} className={styles.hashtag}>#{t.title}</span>
             );
         });
         return (
-            <a key={key} href="#" className={styles.result}>
+            <Link key={key} to="#" className={styles.result}>
                 <div className="container">
                     <div className="row">
                         <div className={styles.resultInner}>
@@ -172,7 +176,7 @@ const SearchResultsContainer = (props:SearchResultsContainerPropInterface) => {
                         </div>
                     </div>
                 </div>
-            </a>
+            </Link>
         );
     });
 

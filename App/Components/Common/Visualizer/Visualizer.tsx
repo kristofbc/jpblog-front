@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { RouteComponentProps, Link, match, withRouter } from 'react-router-dom';
 
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -8,13 +9,14 @@ import BaseComponent from "./../../BaseComponent";
 import MediaDisplay from "./../MediaDisplay/MediaDisplay";
 import { StoreState } from "./../../../Store/StoreState";
 import { formatDate } from "./../../../Utils/Date"
+import { gallerie } from "./../../../Utils/Route"
 import { visualizerNext, visualizerPrevious, visualizerSetIndex, visualizerClose, visualizerSetWidth, visualizerSetOffset } from "./../../../ActionCreators/VisualizerActionCreators";
 import { createThumbnailsGrid, PostThumbnailsGridInterface } from "./../../../Utils/Post";
 
 // tslint:disable-next-line:no-any
 const styles: any = require("./Visualizer.module.less");
 
-interface VisualizerPropInterface {
+interface VisualizerPropInterface extends RouteComponentProps<any> {
     posts?: Post[];
     index?: number;
     open?: boolean;
@@ -150,8 +152,8 @@ const VisualizerAvailablePosts = ( props:VisualizerAvailablePostsInterface ) => 
                             height: size.resize_height
                         }}
                     >
-                        <a 
-                            href="#" 
+                        <Link 
+                            to={gallerie(post.id)}
                             onClick={(e) => { e.preventDefault(); props.onClick(size.idx); }}
                         >
                             <MediaDisplay 
@@ -164,7 +166,7 @@ const VisualizerAvailablePosts = ( props:VisualizerAvailablePostsInterface ) => 
                                 alt={post.title ? post.title : ''} 
                                 className={post.media.width >= post.media.height ? styles.landscape : styles.portrait}
                             />*/}
-                        </a>
+                        </Link>
                     </div>
                 )
             })
@@ -200,9 +202,9 @@ class Visualizer extends BaseComponent<VisualizerPropInterface, {}> {
                                 <div className={styles.visualizerTopHeader}>
                                     {this.props.posts.length > 0 && (<CurrentPostInformation post={current} />) }
                                     <VisualizerControls 
-                                        onNext={this.props.nextPost}
-                                        onPrevious={this.props.previousPost}
-                                        onClose={this.props.closeVisualizer}
+                                        onNext={() => this.nextPost()}
+                                        onPrevious={()=> this.previousPost()}
+                                        onClose={() => this.closeVisualizer()}
                                     />
                                     <div className="clearfix"></div>
                                 </div>
@@ -220,7 +222,7 @@ class Visualizer extends BaseComponent<VisualizerPropInterface, {}> {
                                         index={this.props.index}
                                         containerWidth={this.props.containerWidth}
                                         containerHeight={this.props.innerHeight}
-                                        onClick={this.props.setPost}
+                                        onClick={(id:number) => this.setPost(id)}
                                     />)
                                 }
                                 <div className="clearfix"></div>
@@ -230,6 +232,19 @@ class Visualizer extends BaseComponent<VisualizerPropInterface, {}> {
                 </div>
             </div>
         );
+    }
+
+    setPost(id:number):void {
+        this.props.setPost(id);
+    }
+    previousPost():void {
+        this.props.previousPost()
+    }
+    nextPost(): void {
+        this.props.nextPost();
+    }
+    closeVisualizer():void {
+        this.props.closeVisualizer();
     }
 
     onWindowResize() {
@@ -246,13 +261,13 @@ class Visualizer extends BaseComponent<VisualizerPropInterface, {}> {
         const key = event.keyCode;
         switch(key) {
             case 37: // Left
-                this.props.previousPost()
+                this.previousPost()
                 break;
             case 39: // Right
-                this.props.nextPost();
+                this.nextPost();
                 break;
             case 27: // Escape
-                this.props.closeVisualizer();
+                this.closeVisualizer();
                 break;
         }
     };
@@ -272,7 +287,7 @@ class Visualizer extends BaseComponent<VisualizerPropInterface, {}> {
 };
 
 
-function mapStateToProps(state: StoreState): VisualizerPropInterface {
+function mapStateToProps(state: StoreState, props:VisualizerPropInterface): VisualizerPropInterface {
     return {
         posts: state.visualizer.posts,
         index: state.visualizer.index,
@@ -281,11 +296,15 @@ function mapStateToProps(state: StoreState): VisualizerPropInterface {
         innerWidth: state.applicationConfiguration.innerWidth,
         innerHeight: state.applicationConfiguration.innerHeight,
         containerWidth: state.visualizer.containerWidth,
-        visualizerOffsetTop: state.visualizer.offsetTop
+        visualizerOffsetTop: state.visualizer.offsetTop,
+
+        match: props.match,
+        location: props.location,
+        history: props.history
     }
 };
 
-function mapDispatchToProps(dispatch: Dispatch<{}>): VisualizerPropInterface {
+function mapDispatchToProps(dispatch: Dispatch<{}>) {
     return {
         nextPost: () => dispatch(visualizerNext()),
         previousPost: () => dispatch(visualizerPrevious()),
@@ -297,4 +316,4 @@ function mapDispatchToProps(dispatch: Dispatch<{}>): VisualizerPropInterface {
 };
 
 
-export default Visualizer;
+export default withRouter(Visualizer);

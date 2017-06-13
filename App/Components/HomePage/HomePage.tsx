@@ -2,6 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
+import { Link } from "react-router-dom";
 
 import { StoreState } from "./../../Store/StoreState";
 
@@ -9,6 +10,7 @@ import BaseComponent from "./../BaseComponent";
 import Header from "./../Common/Header/Header";
 import MediaDisplay from "./../Common/MediaDisplay/MediaDisplay";
 import { formatDate } from "./../../Utils/Date";
+import { home, gallerie } from "./../../Utils/Route";
 import { createThumbnailsGrid, PostThumbnailsGridInterface } from "./../../Utils/Post";
 
 import { dragStart, dragMove, dragStop } from "./../../ActionCreators/HomePagePostMobileDragActionCreator";
@@ -80,7 +82,7 @@ const PostC = (props:PostPropInterface) => {
                 height: props.height ? props.height : 'auto'
             }}
         >
-            <a href={props.url} onClick={(e) => { e.preventDefault(); props.onClick(props.id); }}>
+            <Link to={props.url} onClick={(e) => { e.preventDefault(); props.onClick(props.id); }}>
                 <div className={styles.postInner}>
                     <MediaDisplay color={props.color} background={props.background} random={true} />
                     <div className={styles.cover}></div>
@@ -114,7 +116,7 @@ const PostC = (props:PostPropInterface) => {
                         </div>
                     </div>
                 </div>
-            </a>
+            </Link>
         </div>
     );
 };
@@ -162,7 +164,7 @@ function createPostComponentFromPostModel(p:Post, props:any = {}):React.ReactEle
             title={p.title}
             excerpt={p.excerpt}
             readingTime={p.readingTime}
-            url={"#"}
+            url={gallerie(p.id)}
             backgroundWidth={p.media.width}
             backgroundHeight={p.media.height}
             width={props.width ? props.width : 0}
