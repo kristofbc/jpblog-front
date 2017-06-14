@@ -50,8 +50,9 @@ interface SearchResultsContainerPropInterface {
 };
 
 const Logo = () => {
+    // , styles.loading
     return (
-        <div className={[styles.logoContainer, styles.loading].join(' ')}>
+        <div className={[styles.logoContainer].join(' ')}>
             <Link to={home()}>
                 <div className={styles.logoContainerInner}>
                     <div className={styles.hideTopLeft}></div>

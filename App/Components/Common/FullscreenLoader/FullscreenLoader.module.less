@@ -1,0 +1,229 @@
+@import (reference) "../../../Global/Styles/variables.less";
+
+.fullscreenLoaderContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    z-index: 500;
+
+    transition: all 0.2s ease;
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+
+    &.inactive {
+        @keyframes hide {
+            0% {
+                opacity: 1;
+            }
+            99% {
+                opacity: 0;
+            }
+            100% {
+                display: none;
+            }
+        }
+        animation-name: hide;
+        animation-fill-mode: none;
+        animation-duration: 0.2s;
+        // opacity: 0;
+        // display: none;
+    }
+    &.active {
+        // @keyframes show {
+        //     0% {
+        //         opacity: 0;
+        //         display: block;
+        //     }
+        //     100% {
+        //         opacity: 1;
+        //     }
+        // }
+        // animation-name: show;
+        // animation-fill-mode: none;
+        // animation-duration: 0.2s;
+        opacity: 1;
+        display: flex;
+    }
+}
+
+.logoContainer {
+	display: block;
+	position: static;
+    text-align: center;
+
+	&.loading {
+		@keyframes leftToRight {
+			0% { opacity: 0 }
+			50% { opacity: 1 }
+			100% { left: 200%; opacity: 0 }
+		}
+		@keyframes rightToLeft {
+			0% { opacity: 0 }
+			50% { opacity: 1 }
+			100% { right: 200%; opacity: 0 }
+		}
+		@keyframes topToBottom {
+			0% { opacity: 0 }
+			50% { opacity: 1 }
+			100% { top: 200%; opacity: 0 }
+		}
+		@keyframes bottomToTop {
+			0% { opacity: 0 }
+			50% { opacity: 1 }
+			100% { top: -200%; opacity: 0 }
+		}
+		@keyframes glow {
+			0% { opacity: 1 }
+			100% { opacity: 0.3 }
+		}
+		.text {
+			span {
+				animation: glow 2s infinite;
+				animation-direction: alternate;
+				animation-timing-function: ease;
+			}
+		}
+		.hideTopLeft {
+			left: -200%;
+			opacity: 0;
+
+  			animation: leftToRight 2s infinite;
+			animation-direction: normal;
+			animation-timing-function: ease;
+		}
+		.hideBottomTop {
+			top: -200%;	
+			opacity: 0;
+
+			animation: topToBottom 2s infinite;
+			animation-direction: normal;
+			animation-timing-function: ease;
+		}
+		.hideBottomLeft {
+			right: -100%;
+			opacity: 0;
+
+			animation: rightToLeft 2s infinite;
+			animation-direction: normal;
+			animation-timing-function: ease;
+		}
+		.hideTopBottom {
+			top: 200%;
+			opacity: 0;
+
+			animation: bottomToTop 2s infinite;
+			animation-direction: normal;
+			animation-timing-function: ease;
+		}
+	}
+}
+.logoContainerInner {
+    border: 2px solid transparent;
+    position: relative;
+    padding: 3px 4px 0 4px;
+    display: inline-block;
+	width: 78px;
+	margin-top: 3px;
+    
+   	.text {
+		font-family: 'Myriad Pro', Helvetica, Arial, sans-serif;
+		font-weight: bold;
+		font-style: italic;
+		font-size: 16px;
+		line-height: 16px;
+		color: #d0d0d0;
+		margin: 0;
+		padding: 0;
+		text-transform: uppercase;
+		span {
+			color: #191919;
+		}
+
+		@media (min-width: 40.0rem) {
+			font-size: 22px;
+			line-height: 22px;
+			margin-left: 3px;
+		}
+	}
+    
+   	.text {
+		font-family: 'Myriad Pro', Helvetica, Arial, sans-serif;
+		font-weight: bold;
+		font-style: italic;
+		font-size: 16px;
+		line-height: 16px;
+
+		@media (min-width: 40.0rem) {
+			font-size: 22px;
+			line-height: 22px;
+		}
+
+	}
+	.hideTopLeft {
+		position: absolute;
+		width: 5px;
+		height: 2px;
+		background-color: #d0d0d0;
+		top: 0;
+		left: 0;
+		transition: opacity 1s ease;
+	}
+	.hideTopBottom {
+		position: absolute;
+		width: 2px;
+		height: 5px;
+		background-color: #d0d0d0;
+		top: 0;
+		left: 0;
+		transition: opacity 1s ease;
+	}
+	.hideBottomTop {
+		position: absolute;
+		width: 2px;
+		height: 5px;
+		background-color: #d0d0d0;
+		bottom: 0;
+		right: 0;
+		transition: opacity 1s ease;
+	}
+	.hideBottomLeft {
+		position: absolute;
+		width: 5px;
+		height: 2px;
+		background-color: #d0d0d0;
+		bottom: 0;
+		right: 0;
+		transition: opacity 1s ease;
+	}
+
+	@media (min-width: 40.0rem) {
+		margin-top: 0;
+		width: 112px;
+    	padding: 6px 8px 3px 8px;
+
+		.hideTopLeft {
+			width: 8px;
+			height: 3px;
+		}		
+		.hideTopBottom {
+			height: 8px;
+			width: 3px;
+		}
+		.hideBottomTop {
+			height: 8px;
+			width: 3px;
+		}
+		.hideBottomLeft {
+			width: 8px;
+			height: 3px;
+		}
+	}
+}

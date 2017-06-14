@@ -6,43 +6,37 @@ import { MEDIA_DISPLAY_LOAD_ERROR_ACTION, MediaDisplayLoadErrorActionPayload } f
 import { MediaDisplayState } from "./../Store/State/MediaDisplayState";
 
 const initialState:MediaDisplayState = {
-    url: {}
+    url: {},
+    ready: false
 };
 
 
 export default handleActions<MediaDisplayState, void>({
     
     [MEDIA_DISPLAY_LOAD_START_ACTION]: (state, action: ReduxActions.Action<MediaDisplayLoadStartActionPayload>) => {
-        const u = {};
-        u[action.payload.url] = false;
+        const u = { ...state };
+        u.url[action.payload.url] = false;
 
         return {
-            url: {
-                ...state.url,
-                ...u
-            }
+            ...u,
+            ready: false
         }
     },
     [MEDIA_DISPLAY_LOAD_COMPLETED_ACTION]: (state, action: ReduxActions.Action<MediaDisplayLoadCompletedActionPayload>) => {
-        const u = {};
-        u[action.payload.url] = true;
-
+        const u = { ...state };
+        u.url[action.payload.url] = true;
         return {
-            url: {
-                ...state.url,
-                ...u
-            }
+            ...u,
+            ready: ((obj) => { for(var o in obj) if(!obj[o]) { return false; }; return true; })(u.url)
         }
     },
     [MEDIA_DISPLAY_LOAD_ERROR_ACTION]: (state, action: ReduxActions.Action<MediaDisplayLoadErrorActionPayload>) => {
-        const u = {};
-        u[action.payload.url] = false;
+        const u = {... state};
+        u.url[action.payload.url] = false;
 
         return {
-            url: {
-                ...state.url,
-                ...u
-            }
+            ...u,
+            ready: false
         }
     },
 

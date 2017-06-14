@@ -7,7 +7,7 @@ import { StoreState } from "./StoreState";
 export function configureStore(initialState?: StoreState): Store<StoreState> {
     const middlewares: Middleware[] = [
         thunkMiddleware,
-        // createLogger(),
+        createLogger(),
     ];
 
     const composeEnhancers =

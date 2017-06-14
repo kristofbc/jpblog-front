@@ -7,6 +7,7 @@ import HomePagePostMobileDragReducer from "./HomePagePostMobileDragReducer";
 import ApplicationConfigurationReducer from "./ApplicationConfigurationReducer";
 import VisualizerReducer from "./VisualizerReducer";
 import MediaDisplayReducer from "./MediaDisplayReducer";
+import FullscreenLoaderReducer from "./FullscreenLoaderReducer";
 
 const rootReducer: Reducer<StoreState> = combineReducers<StoreState>({
     navigationElements: headerNavigationElementReducer,
@@ -15,7 +16,8 @@ const rootReducer: Reducer<StoreState> = combineReducers<StoreState>({
     homePagePostMobile: HomePagePostMobileDragReducer,
     applicationConfiguration: ApplicationConfigurationReducer,
     visualizer: VisualizerReducer,
-    mediaDisplay: MediaDisplayReducer
+    mediaDisplay: MediaDisplayReducer,
+    fullscreenLoader: FullscreenLoaderReducer
 });
 
 export default rootReducer;

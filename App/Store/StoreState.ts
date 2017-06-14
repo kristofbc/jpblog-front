@@ -5,6 +5,7 @@ import { HomePagePostMobileState } from "./State/HomePagePostMobileState";
 import { ApplicationConfigurationState } from "./State/ApplicationConfigurationState";
 import { VisualizerState } from "./State/VisualizerState";
 import { MediaDisplayState } from "./State/MediaDisplayState";
+import { FullscreenLoaderState } from "./State/FullscreenLoaderState";
 
 export interface StoreState {
     navigationElements: HeaderNavigationElementState;
@@ -14,4 +15,5 @@ export interface StoreState {
     applicationConfiguration: ApplicationConfigurationState;
     visualizer: VisualizerState;
     mediaDisplay: MediaDisplayState;
+    fullscreenLoader: FullscreenLoaderState;
 };
