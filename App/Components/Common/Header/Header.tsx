@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { Link } from "react-router-dom";
@@ -8,6 +9,7 @@ import BaseComponent from "./../../BaseComponent";
 import MediaDisplay from "./../MediaDisplay/MediaDisplay";
 import { openSearch, closeSearch } from "./../../../ActionCreators/HeaderNavigationToggleSearchActionCreator";
 import { searchTyping, fetchResults } from "./../../../ActionCreators/HeaderNavigationSearchActionCreator";
+import { headerResize } from "./../../../ActionCreators/ApplicationConfigurationActionCreators";
 import { formatDate } from "./../../../Utils/Date";
 import { home, gallerie } from "./../../../Utils/Route";
 
@@ -24,10 +26,15 @@ interface HeaderPropInterface {
     navigationElements?:HeaderNavigationElement[];
     search?:SearchInterface;
 
-    openSearch?: () => void,
-    closeSearch?: () => void,
-    searchTyping?: (query:string) => void,
-    fetchResults?: (query:string) => void
+    height?: number;
+
+    isMediaLoading?: boolean;
+
+    openSearch?: () => void;
+    closeSearch?: () => void;
+    searchTyping?: (query:string) => void;
+    fetchResults?: (query:string) => void;
+    heightChange?: (height:number) => void;
 };
 
 interface SearchBarPropInterface {
@@ -49,10 +56,14 @@ interface SearchResultsContainerPropInterface {
     results:Post[];
 };
 
-const Logo = () => {
+interface LogoPropInterface {
+    loading: boolean;
+}
+
+const Logo = (props: LogoPropInterface) => {
     // , styles.loading
     return (
-        <div className={[styles.logoContainer].join(' ')}>
+        <div className={[styles.logoContainer, props.loading ? styles.loading : ""].join(' ')}>
             <Link to={home()}>
                 <div className={styles.logoContainerInner}>
                     <div className={styles.hideTopLeft}></div>
@@ -190,6 +201,8 @@ const SearchResultsContainer = (props:SearchResultsContainerPropInterface) => {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class Header extends BaseComponent<HeaderPropInterface, {}> {
+    height = 0;
+
     isSearchOpen() {
         return this.props.search.isSearchEnabled && this.props.search.query;
     }
@@ -198,7 +211,7 @@ export default class Header extends BaseComponent<HeaderPropInterface, {}> {
         if( this.props.search.isSearchEnabled ) {
             if( this.props.search.query && this.props.search.query != '' ) {
                 // Perform search
-                console.log('Perform search');
+                //console.log('Perform search');
                 this.props.fetchResults(this.props.search.query);
             }
         } else {
@@ -206,19 +219,34 @@ export default class Header extends BaseComponent<HeaderPropInterface, {}> {
         }
     }
 
+    onHeaderResize(): void {
+        const ell = ReactDOM.findDOMNode(this.refs['headerContainer']);
+        if( ell == null ) {
+            return;
+        }
+
+        const size = ell.getBoundingClientRect();
+        if( size.height != this.props.height ) {
+            this.props.heightChange(size.height);
+        }
+    }
+
     doRender(): React.ReactElement<{}> {
         return (
-            <div className={[styles.headerContainer, this.props.search.isSearchEnabled ? styles.searching : ''].join(' ')}>
+            <div 
+                className={[styles.headerContainer, this.props.search.isSearchEnabled ? styles.searching : ''].join(' ')}
+                ref="headerContainer"
+            >
                 <div className={[styles.headerInner].join(' ')}>
                     <div className="container">
                         <div className="row force-row">
                             <div className="column column-80">
-                                <Logo />
+                                <Logo loading={this.props.isMediaLoading} />
                                 <SearchBar onClose={this.props.closeSearch} onChange={this.props.searchTyping} onSubmit={() => { this.searchClicked();}} />
                                 <Navigation elements={this.props.navigationElements} />
                             </div>
                             <div className="column column-20">
-                                <ToggleHeaderAction onSearchClick={() => { this.searchClicked(); }} onMobileMenuClick={() => {}} />
+                                {/*<ToggleHeaderAction onSearchClick={() => { this.searchClicked(); }} onMobileMenuClick={() => {}} />*/}
                             </div>
                         </div>
                     </div>
@@ -238,11 +266,18 @@ export default class Header extends BaseComponent<HeaderPropInterface, {}> {
             </div>
         )
     }
+
+    componentDidMount(): void {
+        window.addEventListener('resize', () => { this.onHeaderResize(); });
+        this.onHeaderResize();
+    }
 };
 
 function mapStateToProps(state: StoreState): HeaderPropInterface {
     return {
         navigationElements: state.navigationElements.elements,
+        height: state.applicationConfiguration.headerHeight,
+        isMediaLoading: !state.mediaDisplay.ready,
         search: {
             isSearchEnabled: state.headerSearch.isOpen,
             query: state.headerSearch.query,
@@ -256,6 +291,7 @@ function mapDispatchToProps(dispatch: Dispatch<{}>): HeaderPropInterface {
         openSearch: () => dispatch(openSearch()),
         closeSearch: () => dispatch(closeSearch()),
         searchTyping: (query:string) => dispatch(searchTyping(query)),
-        fetchResults: (query:string) => dispatch(fetchResults(query))
+        fetchResults: (query:string) => dispatch(fetchResults(query)),
+        heightChange: (height:number) => dispatch(headerResize(height))
     }
 }

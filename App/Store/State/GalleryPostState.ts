@@ -3,4 +3,6 @@ export interface GalleryPostState {
     readonly offset: number;
     readonly limit: number;
     readonly posts: Post[];
+    readonly fetching: boolean;
+    readonly end: boolean;
 };

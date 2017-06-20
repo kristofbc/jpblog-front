@@ -8,7 +8,9 @@ const initialState:GalleryPostState = {
     order: 'latest',
     limit: 20,
     offset: 0,
-    posts: []
+    posts: [],
+    fetching: false,
+    end: false
 };
 
 export default handleActions<GalleryPostState, void>({
@@ -17,19 +19,23 @@ export default handleActions<GalleryPostState, void>({
             ...state,
             order: action.payload.order,
             limit: action.payload.limit,
-            offset: action.payload.offset
+            offset: action.payload.offset,
+            fetching: true
         };
     },
     [GALLERY_POST_FETCH_SUCCESS_ACTION]: (state, action: ReduxActions.Action<GalleryPostFetchSuccessActionPayload>) => {
         return {
             ...state,
-            posts: action.payload.posts,
+            posts: state.posts.concat(action.payload.posts),
+            fetching: false,
+            end: action.payload.posts.length == 0
         };
     },
     [GALLERY_POST_FETCH_ERROR_ACTION]: (state, action: ReduxActions.Action<GalleryPostFetchSuccessActionPayload>) => {
         return {
             ...state,
-            posts: []
+            posts: [],
+            fetching: false
         }
     }
 }, initialState);

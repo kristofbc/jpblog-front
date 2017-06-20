@@ -18,12 +18,15 @@ export function mapJsonToPostModels(json:any):Post[] {
             }
         });
 
+        // @TODO Time is not accepted
+        let date = child.published_date.split(" ")[0];
+
         return {
             id: child.id,
             title: child.title,
             excerpt: child.excerpt,
             body: child.body,
-            date: new Date(child.published_date),
+            date: new Date(date),
             readingTime: child.reading_time,
             tags: tags,
             media: media

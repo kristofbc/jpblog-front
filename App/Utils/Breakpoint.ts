@@ -1,4 +1,4 @@
-const mobileWidth = 640;
+const mobileWidth = 672;
 const tabletWidth = 1280;
 
 export function isMobile(width:number):boolean {

@@ -53,7 +53,7 @@ class App extends BaseComponent<IAppProps, {}> {
 
     componentDidMount(): void {
         this.props.loadNavigationElement();
-        this.props.loadGalleryPost();
+        // this.props.loadGalleryPost();
 
         window.addEventListener('resize', () => { this.onWindowResize(); })
     }

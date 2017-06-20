@@ -15,6 +15,7 @@ import { createThumbnailsGrid, PostThumbnailsGridInterface } from "./../../Utils
 
 import { dragStart, dragMove, dragStop } from "./../../ActionCreators/HomePagePostMobileDragActionCreator";
 import { visualizerOpen } from "./../../ActionCreators/VisualizerActionCreators"
+import { fetchPosts } from "./../../ActionCreators/GalleryPostFetchActionCreators"
 
 // tslint:disable-next-line:no-any
 const styles: any = require("./HomePage.module.less");
@@ -26,6 +27,9 @@ interface HomePagePropInterface {
     selected?: number;
     width?: number;
     height?: number;
+    headerHeight?: number;
+    fetchingPost?: boolean;
+    postEnd?: boolean;
 
     isMobile?: boolean;
     postMobileCoverPosX?: number;
@@ -39,6 +43,7 @@ interface HomePagePropInterface {
     postMobileOnDragStop?: (page:number) => void;
 
     openVisualizer?: (posts:Post[], index: number) => void;
+    loadGalleryPost?: (order:string, offset:number, limit:number) => void;
 };
 
 interface PostPropInterface {
@@ -62,7 +67,9 @@ interface PostGridPropInterface {
     posts: Post[];
     windowWidth: number;
     windowHeight: number;
+    offsetTop: number;
     onPostSelected: (id:number) => void;
+    onScroll:(e) => void
 };
 
 const PostC = (props:PostPropInterface) => {
@@ -137,7 +144,7 @@ const PostGrid = (props:PostGridPropInterface) => {
     }
 
     return (
-        <div className={styles.postsGridContainer}>
+        <div onScroll={props.onScroll} className={styles.postsGridContainer} style={{ top: props.offsetTop, height: props.windowHeight }}>
             <div className={styles.postsGridContainerInner}>
                 {rows.map(function(thumbs, idx) {
                     const key = `home-page-post-row-${idx}`
@@ -205,11 +212,21 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
             this.props.postMobileOnDragStop(Math.min(Math.max(0,page), 1));
         }
     };
-
+    onPostGalleryScroll(e):void {
+        // @TODO change that for dynamic querying instead of relaying on an element that may disapear
+        const height = e.target.children[0].offsetHeight;
+        // The post should be there when the user scroll: no waiting time
+        if(!this.props.postEnd && !this.props.fetchingPost && e.target.scrollTop > height/2) {
+            this.props.loadGalleryPost('latest', this.props.offset + this.props.limit, this.props.limit);
+        }
+    };
     doRender(): React.ReactElement<{}> {
         return (
             <div>
-                <Header navigationElements={[]} search={{}} />
+                <Header 
+                    navigationElements={[]} 
+                    search={{}} 
+                />
                 <div className={[styles.postsContainer, this.props.postMobileCoverDragging ? styles.moving : ''].join(' ')} ref={"postContainer"}>
                     <div 
                         className={styles.postsContainerInner} 
@@ -220,6 +237,10 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
                         onMouseDown={(e) => { this.onPostMobileOnDragStart(e.pageX, e.pageY); }}
                         onMouseMove={(e) => { this.onPostMobileOnDragMove(e.pageX, e.pageY); }}
                         onMouseUp={(e) => { this.onPostMobileOnDragStop(e.pageX, e.pageY); }}
+                        onTouchStart={(e) => { this.onPostMobileOnDragStart(e.touches[0].pageX, e.touches[0].pageY); }}
+                        onTouchMove={(e) => { this.onPostMobileOnDragMove(e.touches[0].pageX, e.touches[0].pageY); }}
+                        onTouchEnd={(e) => { this.onPostMobileOnDragStop(e.changedTouches[0].pageX, e.changedTouches[0].pageX); }}
+                        onTouchCancel={(e) => { this.onPostMobileOnDragStop(e.changedTouches[0].pageX, e.changedTouches[0].pageX); }}
                     >
                         <div className={styles.postMobileCoverContainer}>
                             <div className={styles.postMobileCoverContainerInner}>
@@ -235,8 +256,10 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
                                 </div>
                             </div>
                         </div>
-                        <PostGrid 
+                        <PostGrid
+                            onScroll={(e) => { this.onPostGalleryScroll(e); }}
                             posts={this.props.isMobile && this.props.posts.length > 0 ? this.props.posts.slice(1) : this.props.posts} 
+                            offsetTop={this.props.headerHeight}
                             windowWidth={this.props.width}
                             windowHeight={this.props.height}
                             onPostSelected={(id:number) => {
@@ -253,6 +276,10 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
             </div>
         )
     };
+
+    componentDidMount() {
+        this.props.loadGalleryPost('latest', 0, 7);
+    };
 };
 
 function mapStateToProps(state: StoreState): HomePagePropInterface {
@@ -262,8 +289,11 @@ function mapStateToProps(state: StoreState): HomePagePropInterface {
         offset: state.galleryPosts.offset,
         selected: -1,
         width: state.applicationConfiguration.innerWidth,
-        height: state.applicationConfiguration.innerHeight,
+        height: state.applicationConfiguration.innerHeight-state.applicationConfiguration.headerHeight,
+        headerHeight: state.applicationConfiguration.headerHeight,
         isMobile: state.applicationConfiguration.isMobile,
+        fetchingPost: state.galleryPosts.fetching,
+        postEnd: state.galleryPosts.end,
 
         postMobileCoverStartX: state.homePagePostMobile.startX,
         postMobileCoverStartY: state.homePagePostMobile.startY,
@@ -279,7 +309,8 @@ function mapDispatchToProps(dispatch: Dispatch<{}>): HomePagePropInterface {
         postMobileOnDragStart: (posX:number, posY:number) => dispatch(dragStart(posX, posY)),
         postMobileOnDragMove: (posX:number, posY:number) => dispatch(dragMove(posX, posY)),
         postMobileOnDragStop: (page:number) => dispatch(dragStop(page)),
-        openVisualizer: (posts: Post[], index: number) => dispatch(visualizerOpen(posts, index))
+        openVisualizer: (posts: Post[], index: number) => dispatch(visualizerOpen(posts, index)),
+        loadGalleryPost: (order:string, offset:number, limit: number) => dispatch(fetchPosts(order, offset, limit))
     }
 };
 
