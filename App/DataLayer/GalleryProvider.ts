@@ -5,7 +5,7 @@ export function fetchPosts(order:string, offset: number, limit: number): Promise
         return params.join("=");
     }).join("&");
 
-    return fetch('http://api.jpblog.dev/v1/find?' + params)
+    return fetch('${ENV_API_URL}/${ENV_API_VERSION}/find?' + params)
         .then((response: Response) => response.json())
         .then((json: any) => mapJsonToPostModels(json));
 }

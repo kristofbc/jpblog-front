@@ -53,6 +53,16 @@ var devConfigExtension = {
       {
         test: /.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
         loader: "file-loader?name=[name].[ext]"
+      },
+      {
+        test: /\.ts$/,
+        loader: 'string-replace-loader',
+        query: {
+          multiple: [
+            { search: '${ENV_API_URL}', replace: process.env.ENV_API_URL || 'http://api.jpblog.dev' },
+            { search: '${ENV_API_VERSION}', replace: process.env.ENV_API_VERSION || 'v1' }
+          ]
+        }
       }
     ]
   },
