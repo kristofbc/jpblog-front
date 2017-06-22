@@ -2,9 +2,9 @@ import { headerNavigationElementLoadAction, HeaderNavigationElementLoadActionPay
 
 export function loadNavigationElement(): ReduxActions.Action<HeaderNavigationElementLoadActionPayload[]> {
     let payload:HeaderNavigationElementLoadActionPayload[] = [{
-        name: "Récent",
+        name: "Photos",
         selected: true,
-        url: "/latest"
+        url: "/photos"
     }];
 
     return headerNavigationElementLoadAction(payload);

@@ -208,6 +208,11 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
             if( container.left > 0 || container.right < 0 ) {
                 return;
             } 
+            // Only one scroll direction at a time
+            // Scroll Y is handled by overflow
+            if( this.props.postMobilePage != 0 && this.props.postMobileCoverStartY != posY ) {
+                return;
+            }
             this.props.postMobileOnDragMove(posX, posY); 
         }
     };

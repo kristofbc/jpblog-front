@@ -48,6 +48,7 @@ class App extends BaseComponent<IAppProps, {}> {
     onWindowResize():void {
         const innerWidth: number = window.innerWidth;
         const innerHeight: number = window.innerHeight;
+        console.log(innerHeight, innerWidth);
         this.props.resizeApplication(innerWidth, innerHeight, isMobile(innerWidth), isTablet(innerWidth));
     };
 
