@@ -1,3 +1,4 @@
+import 'whatwg-fetch';
 import { mapJsonToPostModels } from "./../Utils/Post";
 
 export function fetchPosts(order:string, offset: number, limit: number): Promise<Post[]> {

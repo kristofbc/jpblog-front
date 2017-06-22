@@ -2,6 +2,7 @@ import { HeaderNavigationElementState } from "./State/HeaderNavigationElementSta
 import { HeaderNavigationState } from "./State/HeaderSearchState";
 import { GalleryPostState } from "./State/GalleryPostState";
 import { HomePagePostMobileState } from "./State/HomePagePostMobileState";
+import { HomePagePostThumbnailsState } from "./State/HomePagePostThumbnailsState";
 import { ApplicationConfigurationState } from "./State/ApplicationConfigurationState";
 import { VisualizerState } from "./State/VisualizerState";
 import { MediaDisplayState } from "./State/MediaDisplayState";
@@ -12,6 +13,7 @@ export interface StoreState {
     headerSearch: HeaderNavigationState;
     galleryPosts: GalleryPostState;
     homePagePostMobile: HomePagePostMobileState;
+    homePagePostThumbnails: HomePagePostThumbnailsState;
     applicationConfiguration: ApplicationConfigurationState;
     visualizer: VisualizerState;
     mediaDisplay: MediaDisplayState;

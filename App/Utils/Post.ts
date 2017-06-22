@@ -96,23 +96,15 @@ export function linearPartition(seq, k) {
     return [seq.slice(0, n + 1)].concat(ans);
 }
 
-export interface PostThumbnailsGridInterface {
-    resize_width?: number;
-    resize_height?: number;
-    width?: number;
-    height?: number;
-    ratio?: number;
-    idx?: number;
-};
 /**
  * Create a thumbnail grids, liearly distributed based on the aspect ratio of a media
  * @param {Post[]} posts An array of Post to distrbute
  * @param {number} thumbsHeight Height of a single row
  * @param {number} rowWidth Maximum width of a row
- * @return {PostThumbnailsGridInterface[][]} An array of object containing the new width and height
+ * @return {PostThumbnailsGrid[][]} An array of object containing the new width and height
  */
 export function createThumbnailsGrid(posts:Post[], thumbsHeight:number, rowWidth:number) {
-    const sizes:PostThumbnailsGridInterface[] = posts.map((thumbnail, index) => {
+    const sizes:PostThumbnailsGrid[] = posts.map((thumbnail, index) => {
         return {
             width: thumbnail.media.width,
             height: thumbnail.media.height,
@@ -122,7 +114,7 @@ export function createThumbnailsGrid(posts:Post[], thumbsHeight:number, rowWidth
             idx: index,
             resize_width: 0,
             resize_height: 0
-        } as PostThumbnailsGridInterface;
+        } as PostThumbnailsGrid;
     });
 
     let totalWidth = sizes.reduce(function(sum, size) {
@@ -142,7 +134,7 @@ export function createThumbnailsGrid(posts:Post[], thumbsHeight:number, rowWidth
 
         let index = 0;
         for(let i = 0; i < partition.length; i++) {
-            let buffer:PostThumbnailsGridInterface[] = [];
+            let buffer:PostThumbnailsGrid[] = [];
             for(let j = 0; j < partition[i].length; j++) {
                 buffer.push(sizes[index]);
                 index++;

@@ -4,6 +4,7 @@ import headerNavigationElementReducer from "./HeaderNavigationElementReducer";
 import HeaderSearchReducer from "./HeaderSearchReducer";
 import GalleryPostReducer from "./GalleryPostReducer";
 import HomePagePostMobileDragReducer from "./HomePagePostMobileDragReducer";
+import HomePagePostThumbnailsReducer from "./HomePagePostThumbnailsReducer";
 import ApplicationConfigurationReducer from "./ApplicationConfigurationReducer";
 import VisualizerReducer from "./VisualizerReducer";
 import MediaDisplayReducer from "./MediaDisplayReducer";
@@ -14,6 +15,7 @@ const rootReducer: Reducer<StoreState> = combineReducers<StoreState>({
     headerSearch: HeaderSearchReducer,
     galleryPosts: GalleryPostReducer,
     homePagePostMobile: HomePagePostMobileDragReducer,
+    homePagePostThumbnails: HomePagePostThumbnailsReducer,
     applicationConfiguration: ApplicationConfigurationReducer,
     visualizer: VisualizerReducer,
     mediaDisplay: MediaDisplayReducer,

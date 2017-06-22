@@ -9,11 +9,11 @@ mainConfig.module.rules = [];
 
 var devConfigExtension = {
   entry: {
-      app: [
-        // We are using next two entries for hot-reload
-        'webpack-dev-server/client?http://localhost:3333',
-        'webpack/hot/only-dev-server',
-      ]
+    app: [
+      // We are using next two entries for hot-reload
+      'webpack-dev-server/client?http://localhost:3333',
+      'webpack/hot/only-dev-server',
+    ]
   },
 
   output: {

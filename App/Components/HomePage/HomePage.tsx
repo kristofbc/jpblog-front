@@ -11,9 +11,10 @@ import Header from "./../Common/Header/Header";
 import MediaDisplay from "./../Common/MediaDisplay/MediaDisplay";
 import { formatDate } from "./../../Utils/Date";
 import { home, gallerie } from "./../../Utils/Route";
-import { createThumbnailsGrid, PostThumbnailsGridInterface } from "./../../Utils/Post";
+import { createThumbnailsGrid } from "./../../Utils/Post";
 
 import { dragStart, dragMove, dragStop } from "./../../ActionCreators/HomePagePostMobileDragActionCreator";
+import { setMap } from "./../../ActionCreators/HomePagePostThumbnailsActionCreator";
 import { visualizerOpen } from "./../../ActionCreators/VisualizerActionCreators"
 import { fetchPosts } from "./../../ActionCreators/GalleryPostFetchActionCreators"
 
@@ -30,6 +31,7 @@ interface HomePagePropInterface {
     headerHeight?: number;
     fetchingPost?: boolean;
     postEnd?: boolean;
+    postsGrid?: PostThumbnailsGrid[][];
 
     isMobile?: boolean;
     postMobileCoverPosX?: number;
@@ -44,6 +46,7 @@ interface HomePagePropInterface {
 
     openVisualizer?: (posts:Post[], index: number) => void;
     loadGalleryPost?: (order:string, offset:number, limit:number) => void;
+    setPostsGridMap?: (map:PostThumbnailsGrid[][]) => void;
 };
 
 interface PostPropInterface {
@@ -68,8 +71,9 @@ interface PostGridPropInterface {
     windowWidth: number;
     windowHeight: number;
     offsetTop: number;
+    grid: PostThumbnailsGrid[][];
     onPostSelected: (id:number) => void;
-    onScroll:(e) => void
+    onScroll:(e) => void;
 };
 
 const PostC = (props:PostPropInterface) => {
@@ -130,7 +134,13 @@ const PostC = (props:PostPropInterface) => {
 
 const PostGrid = (props:PostGridPropInterface) => {
     // Distribute each Post following the linear algorithm to create a nice grid
-    const buffers:PostThumbnailsGridInterface[][] = createThumbnailsGrid(props.posts, props.windowHeight/2, props.windowWidth);
+    const distributed = props.grid.map((r) => { return r.length; }).reduce((prev, next) => { return prev+next; }, 0);
+    let buffers:PostThumbnailsGrid[][] = [];
+    if(distributed != props.posts.length) {
+        buffers = createThumbnailsGrid(props.posts, props.windowHeight/2, props.windowWidth);
+    } else {
+        buffers = props.grid;
+    }
 
     let rows = [];
     for( let i = 0; i < buffers.length; i++ ) {
@@ -213,10 +223,8 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
         }
     };
     onPostGalleryScroll(e):void {
-        // @TODO change that for dynamic querying instead of relaying on an element that may disapear
-        const height = e.target.children[0].offsetHeight;
         // The post should be there when the user scroll: no waiting time
-        if(!this.props.postEnd && !this.props.fetchingPost && e.target.scrollTop > height/2) {
+        if(!this.props.postEnd && !this.props.fetchingPost && e.target.scrollTop + e.target.offsetHeight > e.target.scrollHeight/2) {
             this.props.loadGalleryPost('latest', this.props.offset + this.props.limit, this.props.limit);
         }
     };
@@ -257,6 +265,7 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
                             </div>
                         </div>
                         <PostGrid
+                            grid={this.props.postsGrid}
                             onScroll={(e) => { this.onPostGalleryScroll(e); }}
                             posts={this.props.isMobile && this.props.posts.length > 0 ? this.props.posts.slice(1) : this.props.posts} 
                             offsetTop={this.props.headerHeight}
@@ -277,6 +286,17 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
         )
     };
 
+    componentWillReceiveProps(nextProps:HomePagePropInterface):void {
+        if( (this.props.isMobile != nextProps.isMobile) || (nextProps.posts != this.props.posts)) {
+            const distributed = nextProps.postsGrid.map((r) => { return r.length; }).reduce((prev, next) => { return prev+next; }, 0);
+            const remainingPosts = nextProps.posts.slice(distributed);
+            const buffers:PostThumbnailsGrid[][] = nextProps.postsGrid.concat(createThumbnailsGrid(remainingPosts, nextProps.height/2, nextProps.width));
+            this.props.setPostsGridMap(buffers);
+        } else if((nextProps.height != this.props.height) || (nextProps.width != this.props.width)) {
+            this.props.setPostsGridMap(createThumbnailsGrid(nextProps.posts, nextProps.height/2, nextProps.width));
+        }
+    }
+
     componentDidMount() {
         this.props.loadGalleryPost('latest', 0, 7);
     };
@@ -294,6 +314,7 @@ function mapStateToProps(state: StoreState): HomePagePropInterface {
         isMobile: state.applicationConfiguration.isMobile,
         fetchingPost: state.galleryPosts.fetching,
         postEnd: state.galleryPosts.end,
+        postsGrid: state.homePagePostThumbnails.map,
 
         postMobileCoverStartX: state.homePagePostMobile.startX,
         postMobileCoverStartY: state.homePagePostMobile.startY,
@@ -310,7 +331,8 @@ function mapDispatchToProps(dispatch: Dispatch<{}>): HomePagePropInterface {
         postMobileOnDragMove: (posX:number, posY:number) => dispatch(dragMove(posX, posY)),
         postMobileOnDragStop: (page:number) => dispatch(dragStop(page)),
         openVisualizer: (posts: Post[], index: number) => dispatch(visualizerOpen(posts, index)),
-        loadGalleryPost: (order:string, offset:number, limit: number) => dispatch(fetchPosts(order, offset, limit))
+        loadGalleryPost: (order:string, offset:number, limit: number) => dispatch(fetchPosts(order, offset, limit)),
+        setPostsGridMap: (map:PostThumbnailsGrid[][]) => dispatch(setMap(map))
     }
 };
 

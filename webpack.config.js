@@ -18,6 +18,8 @@ var config = {
        path.join(__dirname, 'babel', 'babelhelpers.js')
     ],
     app: [
+      // fetch polyfill
+      'whatwg-fetch',
       path.join(__dirname, 'App', 'Index.tsx')
     ]
   },

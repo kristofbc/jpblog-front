@@ -11,7 +11,7 @@ import { StoreState } from "./../../../Store/StoreState";
 import { formatDate } from "./../../../Utils/Date"
 import { gallerie } from "./../../../Utils/Route"
 import { visualizerNext, visualizerPrevious, visualizerSetIndex, visualizerClose, visualizerSetWidth, visualizerSetOffset } from "./../../../ActionCreators/VisualizerActionCreators";
-import { createThumbnailsGrid, PostThumbnailsGridInterface } from "./../../../Utils/Post";
+import { createThumbnailsGrid } from "./../../../Utils/Post";
 
 // tslint:disable-next-line:no-any
 const styles: any = require("./Visualizer.module.less");
@@ -135,7 +135,7 @@ const CurrentPost = (props: CurrentPostInterface) => {
 
 const VisualizerAvailablePosts = ( props:VisualizerAvailablePostsInterface ) => {
     // Distribute each Post following the linear algorithm to create a nice grid
-    const buffers:PostThumbnailsGridInterface[][] = createThumbnailsGrid(props.posts, props.containerHeight/4, props.containerWidth-6);
+    const buffers:PostThumbnailsGrid[][] = createThumbnailsGrid(props.posts, props.containerHeight/4, props.containerWidth-6);
 
     let rows = [];
     for( let i = 0; i < buffers.length; i++ ) {
