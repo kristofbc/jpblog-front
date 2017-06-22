@@ -6,12 +6,15 @@ import { StoreState } from "./StoreState";
 
 export function configureStore(initialState?: StoreState): Store<StoreState> {
     const middlewares: Middleware[] = [
-        thunkMiddleware,
-        createLogger(),
+        thunkMiddleware
     ];
 
     const composeEnhancers =
         DEBUG && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : compose;
+
+    if (process.env.NODE_ENV !== 'production') {
+        middlewares.push(createLogger())
+    };
 
     const store = createStore(rootReducer, initialState, composeEnhancers(
         applyMiddleware(...middlewares),

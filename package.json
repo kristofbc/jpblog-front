@@ -30,6 +30,7 @@
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
+    "@types/node": "^8.0.1",
     "@types/react-router-dom": "^4.0.4",
     "awesome-typescript-loader": "~3.1.2",
     "babel-cli": "^6.24.0",

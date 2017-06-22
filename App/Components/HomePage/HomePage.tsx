@@ -220,7 +220,7 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
         if( this.props.isMobile && this.props.postMobileCoverDragging ) {
             let page = this.props.postMobilePage;
             const container = ReactDOM.findDOMNode(this.refs['postContainerInner']).getBoundingClientRect();
-            console.log(this.props.postMobileCoverStartX, posX);
+            // console.log(this.props.postMobileCoverStartX, posX);
             if( Math.abs(this.props.postMobileCoverStartX - (this.props.postMobilePage*window.innerWidth) - posX) >= window.innerWidth/2 ) {
                 page = posX < window.innerWidth/2 ? page+1 : page-1;
             }
@@ -259,7 +259,7 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
                             <div className={styles.postMobileCoverContainerInner}>
                                 {this.props.posts.length > 0 && createPostComponentFromPostModel(this.props.posts[0], {onClick: (id:number) => {
                                     // Open it?
-                                    console.log("open cover");
+                                    {/*console.log("open cover");*/}
                                 }})}
                                 <div className={styles.postMobileCoverNavigation}>
                                     <ul>
