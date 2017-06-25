@@ -101,6 +101,15 @@ const CurrentPost = (props: CurrentPostInterface) => {
     let width = props.post.media.width;
     let height = props.post.media.height;
 
+    if(width > height) {
+        // width = props.containerWidth;
+        height = props.containerWidth * height / width;
+        width = props.containerWidth;
+    } else {
+        width = maxHeight * width / height;
+        height = maxHeight;
+    }
+
     return (
         <div className={styles.currentPostContainer}>
             <div className={styles.currentPostContainerInner}>

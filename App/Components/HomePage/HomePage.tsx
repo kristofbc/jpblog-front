@@ -293,9 +293,15 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
 
     componentWillReceiveProps(nextProps:HomePagePropInterface):void {
         if( (this.props.isMobile != nextProps.isMobile) || (nextProps.posts != this.props.posts)) {
-            const distributed = nextProps.postsGrid.map((r) => { return r.length; }).reduce((prev, next) => { return prev+next; }, 0);
+            let distributed = this.props.postsGrid.map((r) => { return r.length; }).reduce((prev, next) => { return prev+next; }, 0);
             const remainingPosts = nextProps.posts.slice(distributed);
-            const buffers:PostThumbnailsGrid[][] = nextProps.postsGrid.concat(createThumbnailsGrid(remainingPosts, nextProps.height/2, nextProps.width));
+            const grid = createThumbnailsGrid(remainingPosts, nextProps.height/2, nextProps.width).map((row) => {
+                return row.map((thumb:PostThumbnailsGrid) => {
+                    thumb.idx = distributed++;
+                    return thumb;
+                });
+            });
+            const buffers:PostThumbnailsGrid[][] = this.props.postsGrid.concat(grid);
             this.props.setPostsGridMap(buffers);
         } else if((nextProps.height != this.props.height) || (nextProps.width != this.props.width)) {
             this.props.setPostsGridMap(createThumbnailsGrid(nextProps.posts, nextProps.height/2, nextProps.width));
