@@ -309,7 +309,7 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
     }
 
     componentDidMount() {
-        this.props.loadGalleryPost('latest', 0, 7);
+        this.props.loadGalleryPost('latest', 0, 10);
     };
 };
 
