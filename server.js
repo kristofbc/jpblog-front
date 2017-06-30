@@ -10,6 +10,10 @@ var server = new WebpackDevServer(compiler, {
     // display no info to console (only warnings and errors)
     noInfo: false,
     publicPath: config.output.publicPath,
+    // add base content path
+    contentBase: ".",
+    // add redirect to /
+    historyApiFallback: true,
     stats: {
       // With console colors
       colors: true,

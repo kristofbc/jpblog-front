@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { RouteComponentProps, Link, match, withRouter } from 'react-router-dom';
 
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -16,7 +15,7 @@ import { createThumbnailsGrid } from "./../../../Utils/Post";
 // tslint:disable-next-line:no-any
 const styles: any = require("./Visualizer.module.less");
 
-interface VisualizerPropInterface extends RouteComponentProps<any> {
+interface VisualizerPropInterface {
     posts?: Post[];
     index?: number;
     open?: boolean;
@@ -161,8 +160,8 @@ const VisualizerAvailablePosts = ( props:VisualizerAvailablePostsInterface ) => 
                             height: size.resize_height
                         }}
                     >
-                        <Link 
-                            to={gallerie(post.id)}
+                        <a
+                            href={gallerie(post.id)}
                             onClick={(e) => { e.preventDefault(); props.onClick(size.idx); }}
                         >
                             <MediaDisplay 
@@ -175,7 +174,7 @@ const VisualizerAvailablePosts = ( props:VisualizerAvailablePostsInterface ) => 
                                 alt={post.title ? post.title : ''} 
                                 className={post.media.width >= post.media.height ? styles.landscape : styles.portrait}
                             />*/}
-                        </Link>
+                        </a>
                     </div>
                 )
             })
@@ -305,11 +304,7 @@ function mapStateToProps(state: StoreState, props:VisualizerPropInterface): Visu
         innerWidth: state.applicationConfiguration.innerWidth,
         innerHeight: state.applicationConfiguration.innerHeight,
         containerWidth: state.visualizer.containerWidth,
-        visualizerOffsetTop: state.visualizer.offsetTop,
-
-        match: props.match,
-        location: props.location,
-        history: props.history
+        visualizerOffsetTop: state.visualizer.offsetTop
     }
 };
 
@@ -325,4 +320,4 @@ function mapDispatchToProps(dispatch: Dispatch<{}>) {
 };
 
 
-export default withRouter(Visualizer);
+export default Visualizer;

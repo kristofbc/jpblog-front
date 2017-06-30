@@ -18,7 +18,7 @@ require('milligram');
 require('font-awesome/css/font-awesome');
 require("./Global/Styles/global.less");
 
-interface IAppProps extends RouteComponentProps<any> {
+interface AppPropsInterface extends RouteComponentProps<any> {
     innerWidth?: number;
     innerHeight?: number;
     visualizerOpen?: boolean;
@@ -34,13 +34,13 @@ interface IAppProps extends RouteComponentProps<any> {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-class App extends BaseComponent<IAppProps, {}> {
+class App extends BaseComponent<AppPropsInterface, {}> {
     doRender(): React.ReactElement<{}> {
         return (
             <div>
                 <FullscreenLoader />
-                <HomePage />
-                <Visualizer match={null} history={null} location={null} />
+                <HomePage match={this.props.match} history={this.props.history} location={this.props.location} />
+                <Visualizer />
             </div>
         );
     }
@@ -59,15 +59,7 @@ class App extends BaseComponent<IAppProps, {}> {
         window.addEventListener('resize', () => { this.onWindowResize(); })
     }
 
-    componentWillReceiveProps(nextProps:IAppProps) {
-        // Core of the routing
-        // if(nextProps.visualizerOpen != this.props.visualizerOpen) {
-        //     // It does open automatically
-        //     if(!nextProps.visualizerOpen) {
-        //         this.props.history.push(home());
-        //         // this.props.history.goBack();
-        //     }
-        // }
+    componentWillReceiveProps(nextProps:AppPropsInterface) {
         if(!nextProps.booted && !nextProps.isMediaLoading) {
             setTimeout(() => {
                 this.props.applicationBooted();
@@ -77,7 +69,7 @@ class App extends BaseComponent<IAppProps, {}> {
     }
 };
 
-function mapStateToProps(state: StoreState, props:IAppProps): IAppProps {
+function mapStateToProps(state: StoreState, props:AppPropsInterface): AppPropsInterface {
     return {
         visualizerOpen: state.visualizer.open,
         booted: state.applicationConfiguration.booted,

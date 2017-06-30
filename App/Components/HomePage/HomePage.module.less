@@ -93,7 +93,10 @@
     top: 0;
     left: 100%;
     overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
+
+    &.visualizerClosed {
+        -webkit-overflow-scrolling: touch;
+    }
 
     @media @tablet {
         position: fixed;

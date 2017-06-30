@@ -1,5 +1,6 @@
-export function home():string {
-    return '/';
+export function home(page:number|string = null):string {
+    const url = "/";
+    return page != null ? url + "/page/" + page : url;
 };
 
 export function gallerie(slug:number|string = null): string {

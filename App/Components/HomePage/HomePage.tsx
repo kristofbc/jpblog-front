@@ -5,12 +5,15 @@ import { Dispatch } from "redux";
 import { Link } from "react-router-dom";
 
 import { StoreState } from "./../../Store/StoreState";
+import { RouteComponentProps, match } from 'react-router-dom';
 
 import BaseComponent from "./../BaseComponent";
 import Header from "./../Common/Header/Header";
 import MediaDisplay from "./../Common/MediaDisplay/MediaDisplay";
+import Visualizer from "../../Components/Common/Visualizer/Visualizer";
+
 import { formatDate } from "./../../Utils/Date";
-import { home, gallerie } from "./../../Utils/Route";
+import { is, home, gallerie } from "./../../Utils/Route";
 import { createThumbnailsGrid } from "./../../Utils/Post";
 
 import { dragStart, dragMove, dragStop } from "./../../ActionCreators/HomePagePostMobileDragActionCreator";
@@ -21,7 +24,7 @@ import { fetchPosts } from "./../../ActionCreators/GalleryPostFetchActionCreator
 // tslint:disable-next-line:no-any
 const styles: any = require("./HomePage.module.less");
 
-interface HomePagePropInterface {
+interface HomePagePropInterface extends RouteComponentProps<any> {
     posts?: Post[];
     offset?: number;
     limit?: number;
@@ -32,6 +35,7 @@ interface HomePagePropInterface {
     fetchingPost?: boolean;
     postEnd?: boolean;
     postsGrid?: PostThumbnailsGrid[][];
+    isVisualizerOpen?: boolean;
 
     isMobile?: boolean;
     postMobileCoverPosX?: number;
@@ -72,6 +76,7 @@ interface PostGridPropInterface {
     windowHeight: number;
     offsetTop: number;
     grid: PostThumbnailsGrid[][];
+    isVisualizerOpen: boolean;
     onPostSelected: (id:number) => void;
     onScroll:(e) => void;
 };
@@ -93,7 +98,7 @@ const PostC = (props:PostPropInterface) => {
                 height: props.height ? props.height : 'auto'
             }}
         >
-            <Link to={props.url} onClick={(e) => { e.preventDefault(); props.onClick(props.id); }}>
+            <Link to={props.url} onClick={(e) => { /* e.preventDefault(); */ props.onClick(props.id); }}>
                 <div className={styles.postInner}>
                     <MediaDisplay color={props.color} background={props.background} random={true} />
                     <div className={styles.cover}></div>
@@ -154,7 +159,7 @@ const PostGrid = (props:PostGridPropInterface) => {
     }
 
     return (
-        <div onScroll={props.onScroll} className={styles.postsGridContainer} style={{ top: props.offsetTop, height: props.windowHeight }}>
+        <div onScroll={props.onScroll} className={[styles.postsGridContainer, styles.visualizerClosed].join(' ')} style={{ top: props.offsetTop, height: props.windowHeight }}>
             <div className={styles.postsGridContainerInner}>
                 {rows.map(function(thumbs, idx) {
                     const key = `home-page-post-row-${idx}`
@@ -270,6 +275,7 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
                             </div>
                         </div>
                         <PostGrid
+                            isVisualizerOpen={this.props.isVisualizerOpen}
                             grid={this.props.postsGrid}
                             onScroll={(e) => { this.onPostGalleryScroll(e); }}
                             posts={this.props.isMobile && this.props.posts.length > 0 ? this.props.posts.slice(1) : this.props.posts} 
@@ -277,12 +283,12 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
                             windowWidth={this.props.width}
                             windowHeight={this.props.height}
                             onPostSelected={(id:number) => {
-                                for(var i = 0; i < this.props.posts.length; i++) {
+                                {/*for(var i = 0; i < this.props.posts.length; i++) {
                                     if(this.props.posts[i].id == id) {
                                         this.props.openVisualizer(this.props.posts, i)
                                         break;
                                     }
-                                }
+                                }*/}
                             }}
                         />
                     </div>
@@ -292,6 +298,7 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
     };
 
     componentWillReceiveProps(nextProps:HomePagePropInterface):void {
+        // Grid organization
         if( (this.props.isMobile != nextProps.isMobile) || (nextProps.posts != this.props.posts)) {
             let distributed = this.props.postsGrid.map((r) => { return r.length; }).reduce((prev, next) => { return prev+next; }, 0);
             const remainingPosts = nextProps.posts.slice(distributed);
@@ -306,6 +313,33 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
         } else if((nextProps.height != this.props.height) || (nextProps.width != this.props.width)) {
             this.props.setPostsGridMap(createThumbnailsGrid(nextProps.posts, nextProps.height/2, nextProps.width));
         }
+
+        // Routing
+        if( nextProps.match.path == gallerie(":slug") ) {
+            if(!this.props.isVisualizerOpen) {
+                const slug = nextProps.match.params.slug;
+            
+                for(var i = 0; i < this.props.posts.length; i++) {
+                    if(this.props.posts[i].id == slug) {
+                        this.props.openVisualizer(this.props.posts, i);
+                        break;
+                    }
+                } 
+            } else if (this.props.isVisualizerOpen && nextProps.isVisualizerOpen && nextProps.selected != this.props.selected ) {
+                const url = gallerie(nextProps.posts[nextProps.selected].id);
+                nextProps.history.push(url);
+            } else if(this.props.isVisualizerOpen && !nextProps.isVisualizerOpen) {
+                const url = home();
+                nextProps.history.push(url);
+            }
+
+        } else if( is(nextProps.match.path, home(":page") ) ) {
+            const page = nextProps.match.params.page != undefined ?
+                         nextProps.match.params.page :
+                         "";
+            const url = home(page);
+            nextProps.history.push(url);
+        }
     }
 
     componentDidMount() {
@@ -313,12 +347,12 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
     };
 };
 
-function mapStateToProps(state: StoreState): HomePagePropInterface {
+function mapStateToProps(state: StoreState, props:HomePagePropInterface): HomePagePropInterface {
     return {
         posts: state.galleryPosts.posts,
         limit: state.galleryPosts.limit,
         offset: state.galleryPosts.offset,
-        selected: -1,
+        selected: state.visualizer.index,
         width: state.applicationConfiguration.innerWidth,
         height: state.applicationConfiguration.innerHeight-state.applicationConfiguration.headerHeight,
         headerHeight: state.applicationConfiguration.headerHeight,
@@ -326,17 +360,22 @@ function mapStateToProps(state: StoreState): HomePagePropInterface {
         fetchingPost: state.galleryPosts.fetching,
         postEnd: state.galleryPosts.end,
         postsGrid: state.homePagePostThumbnails.map,
+        isVisualizerOpen: state.visualizer.open,
 
         postMobileCoverStartX: state.homePagePostMobile.startX,
         postMobileCoverStartY: state.homePagePostMobile.startY,
         postMobileCoverPosX: state.applicationConfiguration.isMobile ? state.homePagePostMobile.posX : 0,
         postMobileCoverPosY: state.applicationConfiguration.isMobile ? state.homePagePostMobile.posY : 0,
         postMobilePage: state.applicationConfiguration.isMobile ? state.homePagePostMobile.page : 0,
-        postMobileCoverDragging: state.homePagePostMobile.dragging
+        postMobileCoverDragging: state.homePagePostMobile.dragging,
+
+        match: props.match,
+        location: props.location,
+        history: props.history
     };
 };
 
-function mapDispatchToProps(dispatch: Dispatch<{}>): HomePagePropInterface {
+function mapDispatchToProps(dispatch: Dispatch<{}>) {
     return {
         postMobileOnDragStart: (posX:number, posY:number) => dispatch(dragStart(posX, posY)),
         postMobileOnDragMove: (posX:number, posY:number) => dispatch(dragMove(posX, posY)),

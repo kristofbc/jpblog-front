@@ -1,6 +1,7 @@
 var path = require("path");
 var webpack = require("webpack");
 var HtmlWebpackPlugin = require("html-webpack-plugin");
+var CopyWebpackPlugin = require("copy-webpack-plugin");
 
 var nodeModulesPath = path.join(__dirname, 'node_modules');
 var isProduction = process.env.NODE_ENV == "production";
@@ -31,7 +32,8 @@ var config = {
 
   output: {
       path: path.join(__dirname, 'build'),
-      filename: '[name]_[chunkhash].js'
+      filename: '[name]_[chunkhash].js',
+      publicPath: '/'
   },
 
   module: {
@@ -68,7 +70,7 @@ var config = {
         loader: 'string-replace-loader',
         query: {
           multiple: [
-            { search: '${ENV_API_URL}', replace: process.env.ENV_API_URL || 'http://api.krstf.io' },
+            { search: '${ENV_API_URL}', replace: process.env.ENV_API_URL || 'http://api.jpblog.dev' },
             { search: '${ENV_API_VERSION}', replace: process.env.ENV_API_VERSION || 'v1' }
           ]
         }
@@ -83,7 +85,13 @@ var config = {
     }),
     new webpack.DefinePlugin({
       DEBUG: true
-    })
+    }),
+    new CopyWebpackPlugin(
+      [{
+        from: '.htaccess',
+        to: '.'
+      }]
+    )
   ]
 };
 
