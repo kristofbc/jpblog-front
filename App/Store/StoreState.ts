@@ -7,6 +7,7 @@ import { ApplicationConfigurationState } from "./State/ApplicationConfigurationS
 import { VisualizerState } from "./State/VisualizerState";
 import { MediaDisplayState } from "./State/MediaDisplayState";
 import { FullscreenLoaderState } from "./State/FullscreenLoaderState";
+import { StaticPostState } from "./State/StaticPostState";
 
 export interface StoreState {
     navigationElements: HeaderNavigationElementState;
@@ -18,4 +19,5 @@ export interface StoreState {
     visualizer: VisualizerState;
     mediaDisplay: MediaDisplayState;
     fullscreenLoader: FullscreenLoaderState;
+    staticPost: StaticPostState;
 };

@@ -10,4 +10,8 @@ export function gallerie(slug:number|string = null): string {
 
 export function is(haystack:string, needle:string):boolean {
     return haystack.substr(0, needle.length) == needle;
+};
+
+export function image(id:number|string): string {
+    return "/image/" + id;
 }

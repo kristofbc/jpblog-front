@@ -13,7 +13,7 @@ import MediaDisplay from "./../Common/MediaDisplay/MediaDisplay";
 import Visualizer from "../../Components/Common/Visualizer/Visualizer";
 
 import { formatDate } from "./../../Utils/Date";
-import { is, home, gallerie } from "./../../Utils/Route";
+import { is, home, gallerie, image } from "./../../Utils/Route";
 import { createThumbnailsGrid } from "./../../Utils/Post";
 
 import { dragStart, dragMove, dragStop } from "./../../ActionCreators/HomePagePostMobileDragActionCreator";
@@ -67,7 +67,8 @@ interface PostPropInterface {
     color: string;
     width: number;
     height: number;
-    onClick: (id:number) => void;
+    isMobile: boolean;
+    onClick: (id:number, event:any) => void;
 };
 
 interface PostGridPropInterface {
@@ -77,6 +78,7 @@ interface PostGridPropInterface {
     offsetTop: number;
     grid: PostThumbnailsGrid[][];
     isVisualizerOpen: boolean;
+    isMobile: boolean;
     onPostSelected: (id:number) => void;
     onScroll:(e) => void;
 };
@@ -90,6 +92,57 @@ const PostC = (props:PostPropInterface) => {
         date.push(props.date)
     }
 
+    const postInner = (
+        <div className={styles.postInner}>
+            <MediaDisplay color={props.color} background={props.background} random={true} />
+            <div className={styles.cover}></div>
+            <div className={styles.progressBar}></div>
+            <div className={styles.content}>
+                <div className="container">
+                    <div className="row">
+                        <div className="column">
+                            <div className={styles.tagsContainer}>
+                                {tags.length > 0 && (<ul>{tags}</ul>)}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="column">
+                            <div className={styles.titleContainer}>{props.title && (<h3>{props.title}</h3>)}</div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="column">
+                            <div className={styles.excerptContainer}>{props.excerpt && (<h4>{props.excerpt}</h4>)}</div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="column">
+                            <div className={styles.dateContainer}>
+                                {props.date && <h4>{props.date}{props.readingTime && (<span> - <i className="fa fa-clock-o"></i> {props.readingTime} min.</span>)}</h4>}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    let postInnerWrapper = null;
+    if(!props.isMobile) {
+        postInnerWrapper = (
+            <Link to={props.url} onClick={(e) => { /* e.preventDefault(); */ props.onClick(props.id, e); }}>
+                {postInner}
+            </Link>
+        );
+    } else {
+        postInnerWrapper = (
+            <a href={image(props.id)} target="_blank" onClick={(e) => { /* e.preventDefault(); */ props.onClick(props.id, e); }}>
+                {postInner}
+            </a>
+        );
+    }
+
     return (
         <div 
             className={styles.post}
@@ -97,43 +150,7 @@ const PostC = (props:PostPropInterface) => {
                 width: props.width ? props.width : 'auto',
                 height: props.height ? props.height : 'auto'
             }}
-        >
-            <Link to={props.url} onClick={(e) => { /* e.preventDefault(); */ props.onClick(props.id); }}>
-                <div className={styles.postInner}>
-                    <MediaDisplay color={props.color} background={props.background} random={true} />
-                    <div className={styles.cover}></div>
-                    <div className={styles.progressBar}></div>
-                    <div className={styles.content}>
-                        <div className="container">
-                            <div className="row">
-                                <div className="column">
-                                    <div className={styles.tagsContainer}>
-                                        {tags.length > 0 && (<ul>{tags}</ul>)}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="column">
-                                    <div className={styles.titleContainer}>{props.title && (<h3>{props.title}</h3>)}</div>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="column">
-                                    <div className={styles.excerptContainer}>{props.excerpt && (<h4>{props.excerpt}</h4>)}</div>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="column">
-                                    <div className={styles.dateContainer}>
-                                        {props.date && <h4>{props.date}{props.readingTime && (<span> - <i className="fa fa-clock-o"></i> {props.readingTime} min.</span>)}</h4>}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </Link>
-        </div>
+        >{postInnerWrapper}</div>
     );
 };
 
@@ -153,7 +170,7 @@ const PostGrid = (props:PostGridPropInterface) => {
             buffers[i].map((size, idx) => {
                 const key = `home-page-post-grid-post-${idx}`;
                 const post = props.posts[size.idx];
-                return createPostComponentFromPostModel(post, {key: key, width: size.resize_width, height: size.resize_height, onClick: props.onPostSelected});
+                return createPostComponentFromPostModel(post, {key: key, width: size.resize_width, height: size.resize_height, onClick: props.onPostSelected, isMobile: props.isMobile});
             })
         );
     }
@@ -262,10 +279,11 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
                     >
                         <div className={styles.postMobileCoverContainer}>
                             <div className={styles.postMobileCoverContainerInner}>
-                                {this.props.posts.length > 0 && createPostComponentFromPostModel(this.props.posts[0], {onClick: (id:number) => {
-                                    // Open it?
+                                {this.props.posts.length > 0 && createPostComponentFromPostModel(this.props.posts[0], {onClick: (id:number, e) => {
+                                    // Don't open the cover
+                                    e.preventDefault()
                                     {/*console.log("open cover");*/}
-                                }})}
+                                }, isMobile: this.props.isMobile})}
                                 <div className={styles.postMobileCoverNavigation}>
                                     <ul>
                                         <li><i className="fa fa-circle" /></li>
@@ -282,6 +300,7 @@ class HomePage extends BaseComponent<HomePagePropInterface, {}> {
                             offsetTop={this.props.headerHeight}
                             windowWidth={this.props.width}
                             windowHeight={this.props.height}
+                            isMobile={this.props.isMobile}
                             onPostSelected={(id:number) => {
                                 {/*for(var i = 0; i < this.props.posts.length; i++) {
                                     if(this.props.posts[i].id == id) {

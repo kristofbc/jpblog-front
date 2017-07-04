@@ -9,6 +9,7 @@ import ApplicationConfigurationReducer from "./ApplicationConfigurationReducer";
 import VisualizerReducer from "./VisualizerReducer";
 import MediaDisplayReducer from "./MediaDisplayReducer";
 import FullscreenLoaderReducer from "./FullscreenLoaderReducer";
+import StaticPostReducer from "./StaticPostReducer";
 
 const rootReducer: Reducer<StoreState> = combineReducers<StoreState>({
     navigationElements: headerNavigationElementReducer,
@@ -19,7 +20,8 @@ const rootReducer: Reducer<StoreState> = combineReducers<StoreState>({
     applicationConfiguration: ApplicationConfigurationReducer,
     visualizer: VisualizerReducer,
     mediaDisplay: MediaDisplayReducer,
-    fullscreenLoader: FullscreenLoaderReducer
+    fullscreenLoader: FullscreenLoaderReducer,
+    staticPost: StaticPostReducer
 });
 
 export default rootReducer;
